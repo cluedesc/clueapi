@@ -207,7 +207,7 @@ You can customize the build using the following CMake options:
 | `CLUEAPI_USE_DOTENV_MODULE`  | Enable the dotenv module                  | `ON`    |
 | `CLUEAPI_USE_RTTI`           | Enable Run-Time Type Information          | `OFF`   |
 | `CLUEAPI_USE_SANITIZERS`     | Enable Address/Leak sanitizers            | `OFF`   |
-| `CLUEAPI_RUN_TESTS`          | Build and enable tests                    | `ON`    |
+| `CLUEAPI_RUN_TESTS`          | Build and enable tests                    | `OFF`   |
 
 ## Benchmark
 
