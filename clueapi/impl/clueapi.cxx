@@ -57,7 +57,7 @@ namespace clueapi {
                     port
                 );
 
-                if (ec != std::errc{} || port <= 0) {
+                if (ec != std::errc{} || port == 0) {
                     CLUEAPI_LOG_WARNING("Port number '{}' is not supported, using '8080' instead", m_cfg.m_port);
 
                     port = 8080;
@@ -129,8 +129,8 @@ namespace clueapi {
                 if (!m_running.load(std::memory_order_acquire))
                     return;
 
-                m_running.store(false, std::memory_order_seq_cst);
-                
+                m_running.store(false, std::memory_order_release);
+
                 { std::lock_guard lock(m_wait_mutex); }
 
                 if (m_signals.has_value()) {
