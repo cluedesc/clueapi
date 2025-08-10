@@ -1,0 +1,83 @@
+site_name: clueapi docs
+
+repo_name: clueapi
+repo_url: https://github.com/cluedesc/clueapi
+
+theme:
+  name: material
+
+  icon:
+    repo: fontawesome/brands/github
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+
+      primary: indigo
+      accent: indigo
+
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light theme
+
+    - media: "(prefers-color-scheme: dark)"
+
+      scheme: slate
+      primary: deep purple
+
+      accent: deep purple
+
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark theme
+
+  font:
+    text: "Inter"
+    code: "Fira Code"
+
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+
+    - search.highlight
+    - search.share
+    - search.suggest
+
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.action.edit
+
+    - toc.follow
+    - toc.integrate
+
+nav:
+  - Overview: index.md
+
+  - Examples: examples.md
+
+  - Getting started:
+      - For contributors: getting-started/contributors.md
+      - For developers: getting-started/developers.md
+
+  - Modules:
+      - Logging: modules/logging.md
+      - Dotenv: modules/dotenv.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+
+  - pymdownx.details
+  - pymdownx.superfences
+
+  - pymdownx.highlight:
+      use_pygments: true
+      linenums: true
