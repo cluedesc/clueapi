@@ -156,7 +156,7 @@ namespace clueapi::server {
 
             const auto workers = workers_count > 0 ? workers_count : std::thread::hardware_concurrency();
 
-            if (workers_count <= 0) {
+            if (workers_count == 0) {
                 CLUEAPI_LOG_DEBUG(
                     "Overriding workers count to {} based on hardware concurrency",
 
