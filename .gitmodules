@@ -1,0 +1,12 @@
+[submodule "clueapi/shared/thirdparty/fmt"]
+	path = clueapi/shared/thirdparty/fmt
+	url = https://github.com/fmtlib/fmt
+[submodule "clueapi/shared/thirdparty/nlohmann_json"]
+	path = clueapi/shared/thirdparty/nlohmann_json
+	url = https://github.com/nlohmann/json
+[submodule "clueapi/shared/thirdparty/ankerl_unordered_dense"]
+	path = clueapi/shared/thirdparty/ankerl_unordered_dense
+	url = https://github.com/martinus/unordered_dense
+[submodule "clueapi/shared/thirdparty/tl-expected"]
+	path = clueapi/shared/thirdparty/tl-expected
+	url = https://github.com/TartanLlama/expected.git

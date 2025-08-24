@@ -1,0 +1,51 @@
+Checks: >
+  -*,
+  bugprone-*,
+  clang-analyzer-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  portability-*,
+  cppcoreguidelines-*,
+  -clangd-unused-includes,
+  -unused-includes,
+  -bugprone-unused-return-value,
+  -readability-magic-numbers,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-goto,
+  -modernize-use-trailing-return-type,
+  -readability-uppercase-literal-suffix,
+  -readability-redundant-access-specifiers,
+  -modernize-avoid-c-arrays,
+  -readability-braces-around-statements,
+  -bugprone-throw-keyword-missing,
+  -readability-identifier-length,
+  -readability-convert-member-functions-to-static,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-empty-catch,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-prefer-member-initializer,
+  -readability-redundant-member-init,
+  -cppcoreguidelines-macro-usage,
+  -readability-implicit-bool-conversion,
+  -bugprone-unchecked-optional-access,
+  -cppcoreguidelines-explicit-virtual-functions,
+  -cppcoreguidelines-avoid-reference-coroutine-parameters,
+  -readability-function-cognitive-complexity,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -modernize-use-override
+
+WarningsAsErrors: ""
+
+HeaderFilterRegex: ".*"
+
+InheritParentConfig: false
+
+FormatStyle: none

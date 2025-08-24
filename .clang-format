@@ -1,0 +1,31 @@
+BasedOnStyle: Google
+
+UseTab: Never
+
+IndentWidth: 4
+TabWidth: 4
+
+ColumnLimit: 100
+
+NamespaceIndentation: All
+
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+AlignTrailingComments: true
+
+SpacesBeforeTrailingComments: 1
+
+AllowShortFunctionsOnASingleLine: None
+
+AlignAfterOpenBracket: AlwaysBreak
+
+BinPackArguments: false
+BinPackParameters: false
+
+PenaltyBreakBeforeFirstCallParameter: 0
+
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+SortIncludes: false

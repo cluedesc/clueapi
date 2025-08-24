@@ -1,0 +1,60 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test-linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          if [ "${{ matrix.compiler }}" = "clang++" ]; then
+            sudo apt-get install -y cmake clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+          else
+            sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+          fi
+
+      - name: Build and install Boost
+        run: |
+          wget -q https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.gz
+          tar xzf boost_1_87_0.tar.gz
+          cd boost_1_87_0
+          ./bootstrap.sh --with-libraries=system,filesystem,iostreams
+          ./b2 -j$(nproc)
+          sudo ./b2 install
+          cd ..
+          sudo ldconfig
+
+      - name: Configure CMake
+        env:
+          BOOST_ROOT: /usr/local
+          CMAKE_PREFIX_PATH: /usr/local/lib/cmake
+        run: |
+          COMPILER=$([[ "${{ matrix.compiler }}" == "clang++" ]] && echo "/usr/bin/clang++-19" || echo "g++")
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=${COMPILER} \
+            -DCLUEAPI_RUN_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run tests
+        run: |
+          cd build
+          ctest --output-on-failure
