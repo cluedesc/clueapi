@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/C%2B%2B-20-blue.svg" alt="C++ Standard">
   <a href="."><img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version"></a>
   <a href="https://github.com/cluedesc/clueapi/actions/workflows/tests.yml"><img src="https://github.com/cluedesc/clueapi/actions/workflows/tests.yml/badge.svg" alt="Build"></a>
-  <a href="https://app.codacy.com/gh/cluedesc/clueapi/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade" target="_blank" rel="noopener noreferrer"><img src="https://app.codacy.com/project/badge/Grade/63a34d35987f41e08dcb76a8e86d7149" alt="Codacy Grade" /></a>
+  <a href="https://app.codacy.com/gh/cluedesc/clueapi/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade" target="_blank" rel="noopener noreferrer"><img src="https://app.codacy.com/project/badge/Grade/5a8d305ab93c4c9da65b0ccfb59e6d3c" alt="Codacy Grade" /></a>
 </p>
 
 <p align="center">
