@@ -85,7 +85,7 @@ namespace clueapi::shared {
      *
      * @return A safe-to-use filename.
      */
-    std::string sanitize_filename(std::string_view original_name) {
+    CLUEAPI_INLINE std::string sanitize_filename(std::string_view original_name) {
         if (original_name.empty())
             return "untitled";
 

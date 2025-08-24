@@ -158,9 +158,9 @@ namespace clueapi::http::types {
         /**
          * @brief Gets the safe filename as provided by the client.
          *
-         * @return A const reference to the safe filename string.
+         * @return A safe filename string.
          */
-        [[nodiscard]] CLUEAPI_INLINE const auto& safe_name() const noexcept {
+        [[nodiscard]] CLUEAPI_INLINE auto safe_name() const noexcept {
             return shared::sanitize_filename(m_name);
         }
 
