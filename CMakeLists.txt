@@ -25,6 +25,7 @@ option(CLUEAPI_USE_CUSTOM_JSON "Enable custom json support" OFF)
 
 option(CLUEAPI_USE_LOGGING_MODULE "Enable logging module support" ON)
 option(CLUEAPI_USE_DOTENV_MODULE "Enable dotenv module support" ON)
+option(CLUEAPI_USE_REDIS_MODULE "Enable redis module support" ON)
 
 option(CLUEAPI_USE_RTTI "Use RTTI" OFF)
 
@@ -56,6 +57,7 @@ message(STATUS "  CLUEAPI_USE_CUSTOM_JSON = ${CLUEAPI_USE_CUSTOM_JSON}")
 message(STATUS "  CLUEAPI_USE_LOGGING_MODULE = ${CLUEAPI_USE_LOGGING_MODULE}")
 message(STATUS "  CLUEAPI_OPTIMIZED_LOG_LEVEL = ${CLUEAPI_OPTIMIZED_LOG_LEVEL} (${CLUEAPI_LOG_LEVEL_NUM})")
 message(STATUS "  CLUEAPI_USE_DOTENV_MODULE = ${CLUEAPI_USE_DOTENV_MODULE}")
+message(STATUS "  CLUEAPI_USE_REDIS_MODULE = ${CLUEAPI_USE_REDIS_MODULE}")
 message(STATUS "  CLUEAPI_USE_RTTI = ${CLUEAPI_USE_RTTI}")
 message(STATUS "  CLUEAPI_RUN_TESTS = ${CLUEAPI_RUN_TESTS}")
 
@@ -67,6 +69,10 @@ endif()
 
 if(NOT CLUEAPI_USE_DOTENV_MODULE)
     list(FILTER CLUEAPI_SOURCES EXCLUDE REGEX "/dotenv/")
+endif()
+
+if(NOT CLUEAPI_USE_REDIS_MODULE)
+    list(FILTER CLUEAPI_SOURCES EXCLUDE REGEX "/redis/")
 endif()
 
 find_program(MOLD_PATH mold)
@@ -225,6 +231,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/
 
     PATTERN "modules/logging/*" EXCLUDE
     PATTERN "modules/dotenv/*" EXCLUDE
+    PATTERN "modules/redis/*" EXCLUDE
 
     PATTERN "shared/thirdparty/nlohmann_json/*" EXCLUDE
 )
@@ -280,6 +287,20 @@ if (CLUEAPI_USE_DOTENV_MODULE)
 
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/modules/dotenv/
         DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/modules/dotenv
+
+        FILES_MATCHING
+
+        PATTERN "*.h"
+        PATTERN "*.hxx"
+        PATTERN "*.hpp"
+    )
+endif()
+
+if (CLUEAPI_USE_REDIS_MODULE)
+    target_compile_definitions(clueapi PUBLIC CLUEAPI_USE_REDIS_MODULE)
+
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/modules/redis/
+        DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/modules/redis
 
         FILES_MATCHING
 
@@ -372,6 +393,10 @@ if(CLUEAPI_RUN_TESTS)
 
     if(CLUEAPI_USE_DOTENV_MODULE)
         list(APPEND CLUEAPI_TEST_SOURCES tests/modules/dotenv/dotenv.cxx)
+    endif()
+
+    if(CLUEAPI_USE_REDIS_MODULE)
+        list(APPEND CLUEAPI_TEST_SOURCES tests/modules/redis/redis.cxx)
     endif()
 
     add_executable(clueapi_tests ${CLUEAPI_TEST_SOURCES})

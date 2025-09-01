@@ -51,4 +51,8 @@
 #include <nlohmann/json.hpp>
 #endif // CLUEAPI_USE_NLOHMANN_JSON
 
+#ifdef CLUEAPI_USE_REDIS_MODULE
+#include <boost/redis.hpp>
+#endif // CXXAPI_USE_REDIS_IMPL
+
 #endif // CLUEAPI_SHARED_PCH_HXX

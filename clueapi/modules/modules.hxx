@@ -13,9 +13,11 @@
 
 #ifdef CLUEAPI_USE_DOTENV_MODULE
 #include "dotenv/dotenv.hxx"
-#else
-// ...
 #endif // CLUEAPI_USE_DOTENV_MODULE
+
+#ifdef CLUEAPI_USE_REDIS_MODULE
+#include "redis/redis.hxx"
+#endif // CLUEAPI_USE_REDIS_MODULE
 
 /**
  * @namespace clueapi::modules
