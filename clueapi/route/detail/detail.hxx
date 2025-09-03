@@ -35,12 +35,12 @@ namespace clueapi::route::detail {
         /**
          * @brief The values of the node.
          */
-        shared::unordered_map<http::types::method_t::e_method, _type_t> m_values{};
+        shared::unordered_map_t<http::types::method_t::e_method, _type_t> m_values{};
 
         /**
          * @brief The children of the node.
          */
-        shared::unordered_map<char, std::shared_ptr<radix_node_t<_type_t>>> m_children{};
+        shared::unordered_map_t<char, std::shared_ptr<radix_node_t<_type_t>>> m_children{};
 
         /**
          * @brief The dynamic child of the node.

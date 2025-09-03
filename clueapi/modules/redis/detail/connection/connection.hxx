@@ -123,6 +123,45 @@ namespace clueapi::modules::redis::detail {
 
         shared::awaitable_t<bool> expire(const std::string_view& key, std::chrono::seconds ttl);
 
+        shared::awaitable_t<std::int32_t> ttl(const std::string_view& key);
+
+        shared::awaitable_t<std::int32_t> lpush(
+            const std::string_view& key, const std::string_view& value);
+
+        shared::awaitable_t<bool> ltrim(
+            const std::string_view& key, std::int32_t start, std::int32_t end);
+
+        shared::awaitable_t<std::vector<std::string>> lrange(
+            const std::string_view& key, std::int32_t start, std::int32_t end);
+
+        shared::awaitable_t<std::int32_t> hset(
+            const std::string_view& key,
+            const std::unordered_map<std::string_view, std::string_view>& mapping);
+
+        shared::awaitable_t<std::int32_t> hdel(
+            const std::string_view& key, const std::vector<std::string_view>& fields);
+
+        shared::awaitable_t<std::int32_t> hsetfield(
+            const std::string_view& key,
+            const std::string_view& field,
+            const std::string_view& value);
+
+        shared::awaitable_t<std::unordered_map<std::string, std::string>> hgetall(
+            const std::string_view& key);
+
+        shared::awaitable_t<std::int32_t> hincrby(
+            const std::string_view& key, const std::string_view& field, std::int32_t increment);
+
+        shared::awaitable_t<std::optional<std::string>> hget(
+            const std::string_view& key, const std::string_view& field);
+
+        shared::awaitable_t<bool> hexists(
+            const std::string_view& key, const std::string_view& field);
+
+        shared::awaitable_t<std::optional<std::int32_t>> incr(const std::string_view& key);
+        
+        shared::awaitable_t<std::optional<std::int32_t>> decr(const std::string_view& key);
+
        public:
         CLUEAPI_INLINE bool is_alive() const noexcept {
             return m_state.get() == state_t::connected;

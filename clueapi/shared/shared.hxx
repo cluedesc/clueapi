@@ -62,7 +62,7 @@ namespace clueapi::shared {
         typename _type_t,
         typename _hash_t = std::hash<_key_t>,
         typename _eq_t = std::equal_to<_key_t>>
-    using unordered_map = ankerl::unordered_dense::map<_key_t, _type_t, _hash_t, _eq_t>;
+    using unordered_map_t = ankerl::unordered_dense::map<_key_t, _type_t, _hash_t, _eq_t>;
 
     /**
      * @brief Type alias for an awaitable object from Boost.Asio.

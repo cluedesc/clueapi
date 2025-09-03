@@ -28,7 +28,7 @@ namespace clueapi::modules::dotenv::detail {
          * @brief Swaps the internal map with an empty one to release memory.
          */
         CLUEAPI_INLINE void destroy() noexcept {
-            shared::unordered_map<_key_t, _value_t>().swap(m_container);
+            shared::unordered_map_t<_key_t, _value_t>().swap(m_container);
         }
 
        public:
@@ -126,7 +126,7 @@ namespace clueapi::modules::dotenv::detail {
         /**
          * @brief The internal container.
          */
-        shared::unordered_map<_key_t, _value_t> m_container{};
+        shared::unordered_map_t<_key_t, _value_t> m_container{};
     };
 } // namespace clueapi::modules::dotenv::detail
 #endif // CLUEAPI_USE_DOTENV_MODULE

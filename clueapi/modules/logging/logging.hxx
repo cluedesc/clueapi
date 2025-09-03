@@ -170,7 +170,7 @@ namespace clueapi::modules::logging {
         /**
          * @brief The internal map of loggers.
          */
-        shared::unordered_map<detail::hash_t, std::shared_ptr<base_logger_t>> m_loggers;
+        shared::unordered_map_t<detail::hash_t, std::shared_ptr<base_logger_t>> m_loggers;
     };
 
     /**

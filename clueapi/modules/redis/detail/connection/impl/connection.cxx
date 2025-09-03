@@ -215,4 +215,212 @@ namespace clueapi::modules::redis::detail {
 
         co_return std::get<0>(resp).value() == 1;
     }
+
+    shared::awaitable_t<std::int32_t> connection_t::ttl(const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("TTL", key);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::int32_t> connection_t::lpush(
+        const std::string_view& key, const std::string_view& value) {
+        boost::redis::request req{};
+
+        req.push("LPUSH", key, value);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<bool> connection_t::ltrim(
+        const std::string_view& key, std::int32_t start, std::int32_t end) {
+        boost::redis::request req{};
+
+        req.push("LTRIM", key, std::to_string(start), std::to_string(end));
+
+        boost::redis::response<std::string> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() == "OK";
+    }
+
+    shared::awaitable_t<std::vector<std::string>> connection_t::lrange(
+        const std::string_view& key, std::int32_t start, std::int32_t end) {
+        boost::redis::request req{};
+
+        req.push("LRANGE", key, std::to_string(start), std::to_string(end));
+
+        boost::redis::response<std::vector<std::string>> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return std::vector<std::string>{};
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::int32_t> connection_t::hset(
+        const std::string_view& key,
+        const std::unordered_map<std::string_view, std::string_view>& mapping) {
+        boost::redis::request req{};
+
+        req.push_range("HSET", key, mapping);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::int32_t> connection_t::hdel(
+        const std::string_view& key, const std::vector<std::string_view>& fields) {
+        boost::redis::request req{};
+
+        req.push_range("HDEL", key, fields);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::int32_t> connection_t::hsetfield(
+        const std::string_view& key, const std::string_view& field, const std::string_view& value) {
+        boost::redis::request req{};
+
+        req.push("HSET", key, field, value);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::unordered_map<std::string, std::string>> connection_t::hgetall(
+        const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("HGETALL", key);
+
+        boost::redis::response<std::unordered_map<std::string, std::string>> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return std::unordered_map<std::string, std::string>{};
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::int32_t> connection_t::hincrby(
+        const std::string_view& key, const std::string_view& field, std::int32_t increment) {
+        boost::redis::request req{};
+
+        req.push("HINCRBY", key, field, std::to_string(increment));
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return 0;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::optional<std::string>> connection_t::hget(
+        const std::string_view& key, const std::string_view& field) {
+        boost::redis::request req{};
+
+        req.push("HGET", key, field);
+
+        boost::redis::response<std::optional<std::string>> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return std::nullopt;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<bool> connection_t::hexists(
+        const std::string_view& key, const std::string_view& field) {
+        boost::redis::request req{};
+
+        req.push("HEXISTS", key, field);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() == 1;
+    }
+
+    shared::awaitable_t<std::optional<std::int32_t>> connection_t::incr(
+        const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("INCR", key);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return std::nullopt;
+
+        co_return std::get<0>(resp).value();
+    }
+
+    shared::awaitable_t<std::optional<std::int32_t>> connection_t::decr(
+        const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("DECR", key);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return std::nullopt;
+
+        co_return std::get<0>(resp).value();
+    }
 } // namespace clueapi::modules::redis::detail
