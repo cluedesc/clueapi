@@ -52,6 +52,10 @@
 #endif // CLUEAPI_USE_NLOHMANN_JSON
 
 #ifdef CLUEAPI_USE_REDIS_MODULE
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <boost/redis.hpp>
 #endif // CXXAPI_USE_REDIS_IMPL
 

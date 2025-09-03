@@ -401,6 +401,10 @@ if(CLUEAPI_RUN_TESTS)
 
     add_executable(clueapi_tests ${CLUEAPI_TEST_SOURCES})
 
+    if(NOT CLUEAPI_USE_RTTI)
+        target_compile_options(clueapi_tests PRIVATE -fno-rtti)
+    endif()
+
     target_link_libraries(clueapi_tests
         PRIVATE
         clueapi
