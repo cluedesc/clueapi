@@ -6,14 +6,7 @@ namespace clueapi::modules::redis::detail {
 
     struct connection_t {
         struct state_t {
-            enum e_state {
-                idle,
-                connecting,
-                connected,
-                disconnected,
-                error,
-                unknown
-            };
+            enum e_state { idle, connecting, connected, disconnected, error, unknown };
 
            public:
             CLUEAPI_INLINE state_t() = default;
@@ -87,6 +80,48 @@ namespace clueapi::modules::redis::detail {
 
        public:
         void disconnect();
+
+       public:
+        template <typename... _tuple_t>
+        CLUEAPI_NOINLINE shared::awaitable_t<boost::system::error_code> async_exec(
+            const boost::redis::request& req, boost::redis::response<_tuple_t...>& resp) {
+            boost::system::error_code ec{};
+
+            co_await m_connection->async_exec(
+                req, resp, boost::asio::redirect_error(boost::asio::use_awaitable, ec));
+
+            co_return ec;
+        }
+
+        template <typename _type_t>
+        CLUEAPI_NOINLINE shared::awaitable_t<std::optional<_type_t>> get(
+            const std::string_view& key) {
+            boost::redis::request req{};
+
+            req.push("GET", key);
+
+            boost::redis::response<std::optional<_type_t>> resp{};
+
+            auto ec = co_await async_exec(req, resp);
+
+            if (ec)
+                co_return std::nullopt;
+
+            co_return std::get<0>(resp).value();
+        }
+
+       public:
+        shared::awaitable_t<bool> set(
+            const std::string_view& key,
+            const std::string_view& value,
+
+            std::chrono::seconds ttl = std::chrono::seconds{0});
+
+        shared::awaitable_t<bool> del(const std::string_view& key);
+
+        shared::awaitable_t<bool> exists(const std::string_view& key);
+
+        shared::awaitable_t<bool> expire(const std::string_view& key, std::chrono::seconds ttl);
 
        public:
         CLUEAPI_INLINE bool is_alive() const noexcept {

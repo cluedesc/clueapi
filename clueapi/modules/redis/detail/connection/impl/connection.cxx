@@ -42,10 +42,7 @@ namespace clueapi::modules::redis::detail {
 
             boost::redis::response<std::string> resp{};
 
-            boost::system::error_code ec{};
-
-            co_await m_connection->async_exec(
-                std::move(req), resp, boost::asio::redirect_error(boost::asio::use_awaitable, ec));
+            auto ec = co_await async_exec(req, resp);
 
             if (!ec && std::get<0>(resp).value() == "PONG") {
                 m_state.set(state_t::connected);
@@ -103,10 +100,7 @@ namespace clueapi::modules::redis::detail {
 
         boost::redis::response<std::string> resp{};
 
-        boost::system::error_code ec{};
-
-        co_await m_connection->async_exec(
-            std::move(req), resp, boost::asio::redirect_error(boost::asio::use_awaitable, ec));
+        auto ec = co_await async_exec(req, resp);
 
         if (!ec && std::get<0>(resp).value() == "PONG") {
             m_state.set(state_t::connected);
@@ -155,5 +149,70 @@ namespace clueapi::modules::redis::detail {
         }
 
         m_raw_cfg = std::move(cfg);
+    }
+
+    shared::awaitable_t<bool> connection_t::set(
+        const std::string_view& key, const std::string_view& value, std::chrono::seconds ttl) {
+        boost::redis::request req{};
+
+        if (ttl.count() > 0) {
+            req.push("SET", key, value, "EX", std::to_string(ttl.count()));
+        } else
+            req.push("SET", key, value);
+
+        boost::redis::response<std::string> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() == "OK";
+    }
+
+    shared::awaitable_t<bool> connection_t::del(const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("DEL", key);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() > 0;
+    }
+
+    shared::awaitable_t<bool> connection_t::exists(const std::string_view& key) {
+        boost::redis::request req{};
+
+        req.push("EXISTS", key);
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() > 0;
+    }
+
+    shared::awaitable_t<bool> connection_t::expire(
+        const std::string_view& key, std::chrono::seconds ttl) {
+        boost::redis::request req{};
+
+        req.push("EXPIRE", key, std::to_string(ttl.count()));
+
+        boost::redis::response<std::int32_t> resp{};
+
+        auto ec = co_await async_exec(req, resp);
+
+        if (ec)
+            co_return false;
+
+        co_return std::get<0>(resp).value() == 1;
     }
 } // namespace clueapi::modules::redis::detail

@@ -24,9 +24,9 @@ jobs:
         run: |
           sudo apt-get update
           if [ "${{ matrix.compiler }}" = "clang++" ]; then
-            sudo apt-get install -y cmake clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+            sudo apt-get install -y cmake clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           else
-            sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+            sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           fi
 
       - name: Build and install Boost
@@ -39,6 +39,12 @@ jobs:
           sudo ./b2 install
           cd ..
           sudo ldconfig
+
+      - name: Start Redis server
+        run: |
+          sudo systemctl start redis
+
+          redis-cli ping
 
       - name: Configure CMake
         env:

@@ -3,9 +3,9 @@
 
 namespace clueapi::modules::redis::detail {
     struct cfg_t {
-        std::string m_host{};
+        std::string m_host{"127.0.0.1"};
 
-        std::string m_port{};
+        std::string m_port{"6379"};
 
         std::string m_password{};
 
