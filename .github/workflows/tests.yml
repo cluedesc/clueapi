@@ -2,9 +2,17 @@ name: tests
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'improve/*'
+      - 'feature/*'
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'improve/*'
+      - 'feature/*'
 
 jobs:
   build-and-test-linux:
