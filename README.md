@@ -255,14 +255,22 @@ sudo cmake --install build
 
 You can customize the build using the following CMake options:
 
-| Option                        | Description                                                             | Default |
-| ----------------------------- | ----------------------------------------------------------------------- | ------- |
-| `CLUEAPI_USE_NLOHMANN_JSON`   | Enable nlohmann/json support                                            | `ON`    |
-| `CLUEAPI_USE_LOGGING_MODULE`  | Enable the logging module                                               | `ON`    |
-| `CLUEAPI_USE_DOTENV_MODULE`   | Enable the dotenv module                                                | `ON`    |
-| `CLUEAPI_USE_RTTI`            | Enable Run-Time Type Information                                        | `OFF`   |
-| `CLUEAPI_OPTIMIZED_LOG_LEVEL` | Optimized log level: TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE | `INFO`  |
-| `CLUEAPI_RUN_TESTS`           | Build and enable tests                                                  | `OFF`   |
+| Option                               | Description                                                                  | Default |
+| ------------------------------------ | ---------------------------------------------------------------------------  | ------- |
+| `CLUEAPI_USE_NLOHMANN_JSON`          | Enable **nlohmann/json** support                                             | `ON`    |
+| `CLUEAPI_USE_CUSTOM_JSON`            | Enable **custom JSON** support (overrides `nlohmann/json`)                   | `OFF`   |
+| `CLUEAPI_USE_LOGGING_MODULE`         | Enable the **logging module**                                                | `ON`    |
+| `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `ON`    |
+| `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `ON`    |
+| `CLUEAPI_USE_RTTI`                   | Enable **Run-Time Type Information (RTTI)**                                  | `OFF`   |
+| `CLUEAPI_ENABLE_ASAN`                | Enable **AddressSanitizer (ASan)**                                           | `OFF`   |
+| `CLUEAPI_ENABLE_TSAN`                | Enable **ThreadSanitizer (TSan)**                                            | `OFF`   |
+| `CLUEAPI_ENABLE_UBSAN`               | Enable **UndefinedBehaviorSanitizer (UBSan)**                                | `OFF`   |
+| `CLUEAPI_ENABLE_IPO`                 | Enable **Interprocedural Optimization (IPO/LTO)**                            | `ON`    |
+| `CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS` | Enable **extra compiler optimizations**                                      | `ON`    |
+| `CLUEAPI_ENABLE_WARNINGS`            | Enable **extra compiler warnings**                                           | `OFF`   |
+| `CLUEAPI_BUILD_TESTS`                | Build and enable tests                                                       | `OFF`   |
+| `CLUEAPI_OPTIMIZED_LOG_LEVEL`        | Optimized log level: `TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE`    | `INFO`  |
 
 ## Roadmap
 

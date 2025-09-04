@@ -55,7 +55,7 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_COMPILER=${COMPILER} \
-            -DCLUEAPI_RUN_TESTS=ON
+            -DCLUEAPI_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --config Release

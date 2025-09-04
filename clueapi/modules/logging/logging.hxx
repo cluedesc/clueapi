@@ -229,7 +229,8 @@ namespace clueapi::modules::logging {
  * @brief The implementation macro for logging.
  */
 #define CLUEAPI_LOG_IMPL(main_logging, hash, level, message, ...) \
-    (::clueapi::modules::logging::log_dispatch(main_logging, hash, level, message, ##__VA_ARGS__))
+    (::clueapi::modules::logging::log_dispatch(                   \
+        main_logging, hash, level, message __VA_OPT__(, ) __VA_ARGS__))
 
 #endif // CLUEAPI_USE_LOGGING_MODULE
 

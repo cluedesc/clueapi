@@ -8,4 +8,14 @@ find_dependency(OpenSSL)
 
 find_dependency(Threads)
 
+if(UNIX AND NOT APPLE)
+    find_package(PkgConfig QUIET)
+    
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(uring liburing QUIET)
+    endif()
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/clueapi-targets.cmake")
+
+check_required_components(clueapi)

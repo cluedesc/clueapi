@@ -186,8 +186,8 @@ namespace clueapi::modules::redis::detail {
          */
         CLUEAPI_INLINE connection_t(cfg_t cfg, boost::asio::io_context& io_ctx)
             : m_cfg{std::move(cfg)},
-              m_io_ctx{io_ctx},
               m_state{state_t::idle},
+              m_io_ctx{io_ctx},
               m_connection{std::make_shared<boost::redis::connection>(io_ctx)} {
         }
 
