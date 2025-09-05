@@ -111,7 +111,7 @@ jobs:
 
       - name: Build and install Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
-        shell: cmd
+        shell: pwsh
         run: |
           powershell -Command "Invoke-WebRequest -Uri https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip -OutFile boost_1_87_0.zip"
           Expand-Archive boost_1_87_0.zip -DestinationPath .
