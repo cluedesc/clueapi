@@ -34,9 +34,9 @@ jobs:
         run: |
           sudo apt-get update
           if [ "${{ matrix.compiler }}" = "clang++" ]; then
-            sudo apt-get install -y cmake clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
+            sudo apt-get install -y -qq cmake ninja-build clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           else
-            sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
+            sudo apt-get install -y -qq cmake ninja-build g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           fi
 
       - name: Cache Boost libraries
@@ -68,13 +68,13 @@ jobs:
           BOOST_ROOT: ${{ github.workspace }}/boost_install
         run: |
           COMPILER=$([[ "${{ matrix.compiler }}" == "clang++" ]] && echo "/usr/bin/clang++-19" || echo "g++")
-          cmake -S . -B build \
+          cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_COMPILER=${COMPILER} \
             -DCLUEAPI_BUILD_TESTS=ON
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build --config Release --parallel $(nproc)
 
       - name: Run tests
         run: |
