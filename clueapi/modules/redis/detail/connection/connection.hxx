@@ -469,6 +469,15 @@ namespace clueapi::modules::redis::detail {
         }
 
         /**
+         * @brief Gets the connection configuration.
+         *
+         * @return The connection configuration.
+         */
+        CLUEAPI_INLINE const auto& cfg() const noexcept {
+            return m_cfg;
+        }
+
+        /**
          * @brief Gets the current connection state.
          *
          * @return The current connection state.
@@ -492,21 +501,21 @@ namespace clueapi::modules::redis::detail {
          */
         void build_raw_cfg();
 
+        /**
+         * @brief Cancels the underlying Redis connection.
+         */
+        void cancel_connection();
+
        private:
+        /**
+         * @brief Reference to the I/O context for async operations.
+         */
+        boost::asio::io_context& m_io_ctx;
+
         /**
          * @brief The connection configuration.
          */
         cfg_t m_cfg;
-
-        /**
-         * @brief The current connection state.
-         */
-        state_t m_state;
-
-        /**
-         * @brief The underlying Redis connection.
-         */
-        raw_connection_t m_connection;
 
         /**
          * @brief The raw Redis configuration.
@@ -514,9 +523,19 @@ namespace clueapi::modules::redis::detail {
         boost::redis::config m_raw_cfg;
 
         /**
-         * @brief Reference to the I/O context for async operations.
+         * @brief The current connection state.
          */
-        boost::asio::io_context& m_io_ctx;
+        state_t m_state;
+
+        /**
+         * @brief Whether the connection has been cancelled.
+         */
+        std::atomic_bool m_is_cancelled{false};
+
+        /**
+         * @brief The underlying Redis connection.
+         */
+        raw_connection_t m_connection;
     };
 } // namespace clueapi::modules::redis::detail
 

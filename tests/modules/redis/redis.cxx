@@ -4,555 +4,262 @@
 
 using namespace clueapi::modules::redis;
 
-class redis_connection_tests : public ::testing::Test {
+class redis_module_tests : public ::testing::Test {
    protected:
     void SetUp() override {
         m_cfg.m_host = "127.0.0.1";
         m_cfg.m_port = "6379";
-
-        m_cfg.m_uuid = "test-uuid";
-
-        m_cfg.m_client_name = "clueapi-tests";
-
-        m_cfg.m_log_level = boost::redis::logger::level::err;
-
+        m_cfg.m_username = "test_user";
+        m_cfg.m_password = "test_pass";
+        m_cfg.m_use_ssl = false;
+        m_cfg.m_db = 1;
         m_cfg.m_connect_timeout = std::chrono::seconds{5};
-
-        m_cfg.m_health_check_interval = std::chrono::seconds{0};
-        m_cfg.m_reconnect_wait_interval = std::chrono::seconds{0};
+        m_cfg.m_health_check_interval = std::chrono::seconds{10};
+        m_cfg.m_reconnect_wait_interval = std::chrono::seconds{2};
+        m_cfg.m_log_level = boost::redis::logger::level::info;
     }
 
-    std::unique_ptr<connection_t> make_connection(
-        boost::asio::io_context& io_ctx, bool override_cfg = false, connection_t::cfg_t cfg = {}) {
-        if (!override_cfg)
-            cfg = m_cfg;
-
-        return std::make_unique<connection_t>(cfg, io_ctx);
+    void TearDown() override {
+        m_redis.shutdown();
     }
 
-    connection_t::cfg_t m_cfg;
+    cfg_t m_cfg;
+
+    c_redis m_redis;
 };
 
-TEST_F(redis_connection_tests, connect_disconnect) {
-    boost::asio::io_context io_ctx;
+TEST_F(redis_module_tests, init) {
+    boost::asio::io_context io_ctx{};
 
-    auto connection = make_connection(io_ctx);
+    EXPECT_FALSE(m_redis.is_running());
 
-    EXPECT_NE(connection, nullptr);
+    m_redis.init(m_cfg, &io_ctx);
 
-    auto fut = boost::asio::co_spawn(
-        io_ctx,
+    EXPECT_TRUE(m_redis.is_running());
 
-        [&]() -> boost::asio::awaitable<void> {
-            auto is_connected = co_await connection->connect();
+    const auto& stored_cfg = m_redis.cfg();
 
-            EXPECT_TRUE(is_connected);
-
-            auto state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::connected, state);
-
-            auto is_alive = co_await connection->check_alive();
-
-            EXPECT_TRUE(is_alive);
-
-            connection->disconnect();
-
-            auto is_disconnected = co_await connection->check_alive();
-
-            state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::disconnected, state);
-
-            EXPECT_FALSE(is_disconnected);
-
-            co_return;
-        },
-
-        boost::asio::use_future);
-
-    io_ctx.run();
-
-    fut.get();
-
-    io_ctx.stop();
+    EXPECT_EQ(stored_cfg.m_host, "127.0.0.1");
+    EXPECT_EQ(stored_cfg.m_port, "6379");
 }
 
-TEST_F(redis_connection_tests, connect_invalid_host) {
-    boost::asio::io_context io_ctx;
+TEST_F(redis_module_tests, shutdown_after_init) {
+    boost::asio::io_context io_ctx{};
 
-    auto cfg = m_cfg;
+    m_redis.init(m_cfg, &io_ctx);
 
-    cfg.m_host = "127.0.1.1";
+    EXPECT_TRUE(m_redis.is_running());
 
-    auto connection = make_connection(io_ctx, true, cfg);
+    m_redis.shutdown();
 
-    EXPECT_NE(connection, nullptr);
-
-    auto fut = boost::asio::co_spawn(
-        io_ctx,
-
-        [&]() -> boost::asio::awaitable<void> {
-            auto is_connected = co_await connection->connect();
-
-            EXPECT_FALSE(is_connected);
-
-            auto state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::error, state);
-
-            auto is_alive = co_await connection->check_alive();
-
-            EXPECT_FALSE(is_alive);
-
-            connection->disconnect();
-
-            state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::disconnected, state);
-
-            co_return;
-        },
-
-        boost::asio::use_future);
-
-    io_ctx.run();
-
-    fut.get();
-
-    io_ctx.stop();
+    EXPECT_FALSE(m_redis.is_running());
 }
 
-TEST_F(redis_connection_tests, connect_invalid_port) {
-    boost::asio::io_context io_ctx;
+TEST_F(redis_module_tests, shutdown_without_init) {
+    EXPECT_FALSE(m_redis.is_running());
 
-    auto cfg = m_cfg;
+    EXPECT_NO_THROW(m_redis.shutdown());
 
-    cfg.m_port = "1234";
-
-    auto connection = make_connection(io_ctx, true, cfg);
-
-    EXPECT_NE(connection, nullptr);
-
-    auto fut = boost::asio::co_spawn(
-        io_ctx,
-
-        [&]() -> boost::asio::awaitable<void> {
-            auto is_connected = co_await connection->connect();
-
-            EXPECT_FALSE(is_connected);
-
-            auto state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::error, state);
-
-            auto is_alive = co_await connection->check_alive();
-
-            EXPECT_FALSE(is_alive);
-
-            connection->disconnect();
-
-            state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::disconnected, state);
-
-            co_return;
-        },
-
-        boost::asio::use_future);
-
-    io_ctx.run();
-
-    fut.get();
-
-    io_ctx.stop();
+    EXPECT_FALSE(m_redis.is_running());
 }
 
-TEST_F(redis_connection_tests, test_default_redis_methods) {
-    boost::asio::io_context io_ctx;
+TEST_F(redis_module_tests, multiple_shutdown_calls) {
+    boost::asio::io_context io_ctx{};
 
-    auto connection = make_connection(io_ctx);
+    m_redis.init(m_cfg, &io_ctx);
 
-    EXPECT_NE(connection, nullptr);
+    EXPECT_TRUE(m_redis.is_running());
 
-    auto fut = boost::asio::co_spawn(
-        io_ctx,
+    m_redis.shutdown();
 
-        [&]() -> boost::asio::awaitable<void> {
-            auto is_connected = co_await connection->connect();
+    EXPECT_FALSE(m_redis.is_running());
 
-            EXPECT_TRUE(is_connected);
+    EXPECT_NO_THROW(m_redis.shutdown());
 
-            auto state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::connected, state);
-
-            auto is_alive = co_await connection->check_alive();
-
-            EXPECT_TRUE(is_alive);
-
-            {
-                auto key = "test-key";
-
-                auto value = "test-value";
-
-                if (co_await connection->exists(key)) {
-                    auto key_del = co_await connection->del(key);
-
-                    EXPECT_TRUE(key_del);
-                }
-
-                {
-                    auto key_exists = co_await connection->exists(key);
-
-                    EXPECT_FALSE(key_exists);
-                }
-
-                {
-                    auto key_del = co_await connection->del(key);
-
-                    EXPECT_FALSE(key_del);
-                }
-
-                {
-                    auto key_set = co_await connection->set(key, value);
-
-                    EXPECT_TRUE(key_set);
-                }
-
-                {
-                    auto key_get = co_await connection->get<std::string>(key);
-
-                    EXPECT_EQ(value, key_get.value());
-                }
-
-                {
-                    auto key_expire = co_await connection->expire(key, std::chrono::seconds{1});
-
-                    EXPECT_TRUE(key_expire);
-                }
-
-                {
-                    auto steady_timer = boost::asio::steady_timer{io_ctx};
-
-                    steady_timer.expires_after(std::chrono::seconds{2});
-
-                    co_await steady_timer.async_wait(boost::asio::use_awaitable);
-                }
-
-                {
-                    auto key_get = co_await connection->get<std::string>(key);
-
-                    EXPECT_FALSE(key_get.has_value());
-                }
-
-                {
-                    auto key_set = co_await connection->set(key, value);
-
-                    EXPECT_TRUE(key_set);
-                }
-
-                {
-                    auto key_del = co_await connection->del(key);
-
-                    EXPECT_TRUE(key_del);
-                }
-
-                {
-                    auto key_get = co_await connection->get<std::string>(key);
-
-                    EXPECT_FALSE(key_get.has_value());
-                }
-            }
-
-            connection->disconnect();
-
-            auto is_disconnected = co_await connection->check_alive();
-
-            state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::disconnected, state);
-
-            EXPECT_FALSE(is_disconnected);
-
-            co_return;
-        },
-
-        boost::asio::use_future);
-
-    io_ctx.run();
-
-    fut.get();
-
-    io_ctx.stop();
+    EXPECT_FALSE(m_redis.is_running());
 }
 
-TEST_F(redis_connection_tests, test_other_redis_methods) {
-    boost::asio::io_context io_ctx;
+TEST_F(redis_module_tests, create_connection_without_init) {
+    EXPECT_FALSE(m_redis.is_running());
 
-    auto connection = make_connection(io_ctx);
+    auto connection = m_redis.create_connection();
 
-    EXPECT_NE(connection, nullptr);
+    EXPECT_EQ(connection, nullptr);
+}
 
-    auto fut = boost::asio::co_spawn(
-        io_ctx,
+TEST_F(redis_module_tests, create_connection_after_shutdown) {
+    boost::asio::io_context io_ctx{};
 
-        [&]() -> boost::asio::awaitable<void> {
-            auto is_connected = co_await connection->connect();
+    m_redis.init(m_cfg, &io_ctx);
 
-            EXPECT_TRUE(is_connected);
+    EXPECT_TRUE(m_redis.is_running());
 
-            auto state = connection->state();
+    m_redis.shutdown();
 
-            EXPECT_EQ(connection_t::state_t::connected, state);
+    EXPECT_FALSE(m_redis.is_running());
 
-            auto is_alive = co_await connection->check_alive();
+    auto connection = m_redis.create_connection();
 
-            EXPECT_TRUE(is_alive);
+    EXPECT_EQ(connection, nullptr);
+}
 
-            {
-                auto key = "test-key";
+TEST_F(redis_module_tests, create_connection_with_default_config) {
+    boost::asio::io_context io_ctx{};
 
-                if (co_await connection->exists(key)) {
-                    auto key_del = co_await connection->del(key);
+    m_redis.init(m_cfg, &io_ctx);
 
-                    EXPECT_TRUE(key_del);
-                }
+    auto connection = m_redis.create_connection();
 
-                {
-                    auto len1 = co_await connection->lpush(key, "one");
+    ASSERT_NE(connection, nullptr);
 
-                    EXPECT_EQ(len1, 1);
+    const auto& conn_cfg = connection->cfg();
 
-                    auto len2 = co_await connection->lpush(key, "two");
+    EXPECT_EQ(conn_cfg.m_host, "127.0.0.1");
+    EXPECT_EQ(conn_cfg.m_port, "6379");
+    EXPECT_EQ(conn_cfg.m_username, "test_user");
+    EXPECT_EQ(conn_cfg.m_password, "test_pass");
 
-                    EXPECT_EQ(len2, 2);
+    EXPECT_FALSE(conn_cfg.m_use_ssl);
 
-                    auto len3 = co_await connection->lpush(key, "three");
+    EXPECT_EQ(conn_cfg.m_db, 1);
+    EXPECT_EQ(conn_cfg.m_client_name, "clueapi-redis-client");
 
-                    EXPECT_EQ(len3, 3);
-                }
+    EXPECT_FALSE(conn_cfg.m_uuid.empty());
+}
 
-                {
-                    auto list_full = co_await connection->lrange(key, 0, -1);
+TEST_F(redis_module_tests, create_connection_with_custom_config) {
+    boost::asio::io_context io_ctx{};
 
-                    EXPECT_EQ(list_full.size(), 3);
+    m_redis.init(m_cfg, &io_ctx);
 
-                    if (list_full.size() == 3) {
-                        EXPECT_EQ(list_full[0], "three");
-                        EXPECT_EQ(list_full[1], "two");
-                        EXPECT_EQ(list_full[2], "one");
+    connection_t::cfg_t custom_cfg{};
 
-                        auto trim_ok = co_await connection->ltrim(key, 0, 1);
+    custom_cfg.m_host = "127.0.0.1";
+    custom_cfg.m_port = "6380";
+    custom_cfg.m_username = "custom_user";
+    custom_cfg.m_password = "custom_pass";
+    custom_cfg.m_use_ssl = true;
+    custom_cfg.m_db = 5;
+    custom_cfg.m_client_name = "custom-client";
+    custom_cfg.m_uuid = "custom-uuid";
+    custom_cfg.m_connect_timeout = std::chrono::seconds{10};
+    custom_cfg.m_health_check_interval = std::chrono::seconds{20};
+    custom_cfg.m_reconnect_wait_interval = std::chrono::seconds{5};
+    custom_cfg.m_log_level = boost::redis::logger::level::debug;
 
-                        EXPECT_TRUE(trim_ok);
+    auto connection = m_redis.create_connection(custom_cfg);
 
-                        auto list_trimmed = co_await connection->lrange(key, 0, -1);
+    ASSERT_NE(connection, nullptr);
 
-                        EXPECT_EQ(list_trimmed.size(), 2);
+    const auto& conn_cfg = connection->cfg();
 
-                        if (list_trimmed.size() == 2) {
-                            EXPECT_EQ(list_trimmed[0], "three");
-                            EXPECT_EQ(list_trimmed[1], "two");
+    EXPECT_EQ(conn_cfg.m_host, "127.0.0.1");
+    EXPECT_EQ(conn_cfg.m_port, "6380");
+    EXPECT_EQ(conn_cfg.m_username, "custom_user");
+    EXPECT_EQ(conn_cfg.m_password, "custom_pass");
+    EXPECT_TRUE(conn_cfg.m_use_ssl);
+    EXPECT_EQ(conn_cfg.m_db, 5);
+    EXPECT_EQ(conn_cfg.m_client_name, "custom-client");
+    EXPECT_EQ(conn_cfg.m_uuid, "custom-uuid");
+}
 
-                            auto expire_ok =
-                                co_await connection->expire(key, std::chrono::seconds{10});
+TEST_F(redis_module_tests, create_multiple_connections) {
+    boost::asio::io_context io_ctx{};
 
-                            EXPECT_TRUE(expire_ok);
+    m_redis.init(m_cfg, &io_ctx);
 
-                            auto ttl1 = co_await connection->ttl(key);
+    auto connection1 = m_redis.create_connection();
+    auto connection2 = m_redis.create_connection();
 
-                            EXPECT_GT(ttl1, 0);
-                        }
-                    }
+    ASSERT_NE(connection1, nullptr);
+    ASSERT_NE(connection2, nullptr);
 
-                    auto key_del = co_await connection->del(key);
+    EXPECT_NE(connection1->cfg().m_uuid, connection2->cfg().m_uuid);
+}
 
-                    EXPECT_TRUE(key_del);
-                }
+TEST_F(redis_module_tests, create_connection_with_empty_credentials) {
+    cfg_t cfg_no_creds;
 
-                {
-                    auto hash_key = "test-hash-key";
+    cfg_no_creds.m_host = "127.0.0.1";
+    cfg_no_creds.m_port = "6379";
 
-                    if (co_await connection->exists(hash_key)) {
-                        auto key_del = co_await connection->del(hash_key);
+    cfg_no_creds.m_username = "";
+    cfg_no_creds.m_password = "";
 
-                        EXPECT_TRUE(key_del);
-                    }
+    boost::asio::io_context io_ctx{};
 
-                    std::unordered_map<std::string_view, std::string_view> initial_map = {
-                        {"field1", "value1"}, {"field2", "value2"}, {"counter", "10"}};
+    m_redis.init(cfg_no_creds, &io_ctx);
 
-                    auto hset_result = co_await connection->hset(hash_key, initial_map);
+    auto connection = m_redis.create_connection();
 
-                    EXPECT_EQ(hset_result, 3);
+    ASSERT_NE(connection, nullptr);
 
-                    auto retrieved_map = co_await connection->hgetall(hash_key);
+    const auto& conn_cfg = connection->cfg();
 
-                    EXPECT_EQ(retrieved_map.size(), 3);
+    EXPECT_EQ(conn_cfg.m_username, "default");
 
-                    EXPECT_EQ(retrieved_map["field1"], "value1");
-                    EXPECT_EQ(retrieved_map["field2"], "value2");
-                    EXPECT_EQ(retrieved_map["counter"], "10");
+    EXPECT_TRUE(conn_cfg.m_password.empty());
+}
 
-                    auto hsetfield_update_result =
-                        co_await connection->hsetfield(hash_key, "field1", "new-value1");
+TEST_F(redis_module_tests, test_connection_with_external_io_ctx) {
+    boost::asio::io_context io_ctx{};
 
-                    EXPECT_EQ(hsetfield_update_result, 0);
+    m_redis.init(m_cfg, &io_ctx);
 
-                    auto hsetfield_add_result =
-                        co_await connection->hsetfield(hash_key, "field3", "value3");
+    {
+        connection_t::cfg_t custom_cfg{};
 
-                    EXPECT_EQ(hsetfield_add_result, 1);
+        {
+            custom_cfg.m_host = "127.0.0.1";
+            custom_cfg.m_port = "6379";
 
-                    auto updated_map = co_await connection->hgetall(hash_key);
+            custom_cfg.m_client_name = "custom-client";
+            custom_cfg.m_uuid = "custom-uuid";
 
-                    EXPECT_EQ(updated_map.size(), 4);
+            custom_cfg.m_connect_timeout = std::chrono::seconds{3};
+            custom_cfg.m_health_check_interval = std::chrono::seconds{0};
+            custom_cfg.m_reconnect_wait_interval = std::chrono::seconds{0};
 
-                    EXPECT_EQ(updated_map["field1"], "new-value1");
-                    EXPECT_EQ(updated_map["field3"], "value3");
+            custom_cfg.m_log_level = boost::redis::logger::level::debug;
+        }
 
-                    auto hincrby_result = co_await connection->hincrby(hash_key, "counter", 5);
+        auto connection = m_redis.create_connection(std::move(custom_cfg));
 
-                    EXPECT_EQ(hincrby_result, 15);
+        auto fut = boost::asio::co_spawn(
+            io_ctx,
 
-                    auto map_after_incr = co_await connection->hgetall(hash_key);
+            [conn_ptr = connection]() -> boost::asio::awaitable<void> {
+                auto is_connected = co_await conn_ptr->connect();
 
-                    EXPECT_EQ(map_after_incr["counter"], "15");
+                EXPECT_TRUE(is_connected);
 
-                    std::vector<std::string_view> fields_to_del = {"field1", "field3"};
+                auto state = conn_ptr->state();
 
-                    auto hdel_result = co_await connection->hdel(hash_key, fields_to_del);
+                EXPECT_EQ(state, connection_t::state_t::connected);
 
-                    EXPECT_EQ(hdel_result, 2);
+                auto is_alive = co_await conn_ptr->check_alive();
 
-                    auto final_map = co_await connection->hgetall(hash_key);
+                EXPECT_TRUE(is_alive);
 
-                    EXPECT_EQ(final_map.size(), 2);
+                conn_ptr->disconnect();
 
-                    EXPECT_FALSE(final_map.count("field1"));
-                    EXPECT_FALSE(final_map.count("field3"));
-                    EXPECT_TRUE(final_map.count("field2"));
+                auto is_disconnected = co_await conn_ptr->check_alive();
 
-                    auto key_del = co_await connection->del(hash_key);
+                EXPECT_FALSE(is_disconnected);
 
-                    EXPECT_TRUE(key_del);
-                }
+                state = conn_ptr->state();
 
-                {
-                    auto hash_key = "test-hash-key-2";
+                EXPECT_EQ(state, connection_t::state_t::disconnected);
 
-                    if (co_await connection->exists(hash_key)) {
-                        auto key_del = co_await connection->del(hash_key);
+                co_return;
+            },
 
-                        EXPECT_TRUE(key_del);
-                    }
+            boost::asio::use_future);
 
-                    {
-                        auto hset_result =
-                            co_await connection->hsetfield(hash_key, "field_hget", "value_hget");
+        io_ctx.run();
 
-                        EXPECT_EQ(hset_result, 1);
-                    }
+        fut.get();
+    }
 
-                    {
-                        auto value_hget = co_await connection->hget(hash_key, "field_hget");
-
-                        EXPECT_TRUE(value_hget.has_value());
-
-                        EXPECT_EQ(value_hget.value(), "value_hget");
-                    }
-
-                    {
-                        auto value_hget_non_existent =
-                            co_await connection->hget(hash_key, "field_non_existent");
-
-                        EXPECT_FALSE(value_hget_non_existent.has_value());
-                    }
-
-                    {
-                        auto hexists_result = co_await connection->hexists(hash_key, "field_hget");
-
-                        EXPECT_TRUE(hexists_result);
-                    }
-
-                    {
-                        auto hexists_result_non_existent =
-                            co_await connection->hexists(hash_key, "field_non_existent");
-
-                        EXPECT_FALSE(hexists_result_non_existent);
-                    }
-
-                    {
-                        auto key_del = co_await connection->del(hash_key);
-
-                        EXPECT_TRUE(key_del);
-                    }
-                }
-
-                {
-                    auto counter_key = "test-counter";
-
-                    if (co_await connection->exists(counter_key)) {
-                        auto key_del = co_await connection->del(counter_key);
-
-                        EXPECT_TRUE(key_del);
-                    }
-
-                    {
-                        auto incr_result = co_await connection->incr(counter_key);
-
-                        EXPECT_TRUE(incr_result.has_value());
-                        EXPECT_EQ(incr_result.value(), 1);
-                    }
-
-                    {
-                        auto incr_result = co_await connection->incr(counter_key);
-
-                        EXPECT_TRUE(incr_result.has_value());
-                        EXPECT_EQ(incr_result.value(), 2);
-                    }
-
-                    {
-                        auto decr_result = co_await connection->decr(counter_key);
-
-                        EXPECT_TRUE(decr_result.has_value());
-                        EXPECT_EQ(decr_result.value(), 1);
-                    }
-
-                    {
-                        auto decr_result = co_await connection->decr(counter_key);
-
-                        EXPECT_TRUE(decr_result.has_value());
-                        EXPECT_EQ(decr_result.value(), 0);
-                    }
-
-                    {
-                        auto key_del = co_await connection->del(counter_key);
-
-                        EXPECT_TRUE(key_del);
-                    }
-                }
-            }
-
-            connection->disconnect();
-
-            auto is_disconnected = co_await connection->check_alive();
-
-            state = connection->state();
-
-            EXPECT_EQ(connection_t::state_t::disconnected, state);
-
-            EXPECT_FALSE(is_disconnected);
-
-            co_return;
-        },
-
-        boost::asio::use_future);
-
-    io_ctx.run();
-
-    fut.get();
-
-    io_ctx.stop();
+    m_redis.shutdown();
 }

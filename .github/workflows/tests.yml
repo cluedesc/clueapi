@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
+
       matrix:
         compiler: [g++, clang++]
 
@@ -37,16 +39,23 @@ jobs:
             sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           fi
 
+      - name: Cache Boost libraries
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/boost_install
+          key: ${{ runner.os }}-${{ matrix.compiler }}-boost-1.87.0
+
       - name: Build and install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           wget -q https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.gz
           tar xzf boost_1_87_0.tar.gz
           cd boost_1_87_0
-          ./bootstrap.sh --with-libraries=system,filesystem,iostreams
-          ./b2 -j$(nproc)
-          sudo ./b2 install
+          ./bootstrap.sh --prefix=${{ github.workspace }}/boost_install --with-libraries=system,filesystem,iostreams
+          ./b2 -j$(nproc) toolset=$(if [ "${{ matrix.compiler }}" = "clang++" ]; then echo "clang"; else echo "gcc"; fi)
+          ./b2 install --prefix=${{ github.workspace }}/boost_install toolset=$(if [ "${{ matrix.compiler }}" = "clang++" ]; then echo "clang"; else echo "gcc"; fi)
           cd ..
-          sudo ldconfig
 
       - name: Start Redis server
         run: |
@@ -56,8 +65,7 @@ jobs:
 
       - name: Configure CMake
         env:
-          BOOST_ROOT: /usr/local
-          CMAKE_PREFIX_PATH: /usr/local/lib/cmake
+          BOOST_ROOT: ${{ github.workspace }}/boost_install
         run: |
           COMPILER=$([[ "${{ matrix.compiler }}" == "clang++" ]] && echo "/usr/bin/clang++-19" || echo "g++")
           cmake -S . -B build \
@@ -70,5 +78,6 @@ jobs:
 
       - name: Run tests
         run: |
+          export LD_LIBRARY_PATH=${{ github.workspace }}/boost_install/lib:$LD_LIBRARY_PATH
           cd build
           ctest --output-on-failure

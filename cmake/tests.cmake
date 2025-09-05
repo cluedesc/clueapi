@@ -49,6 +49,7 @@ endif()
 
 if(CLUEAPI_USE_REDIS_MODULE)
     list(APPEND CLUEAPI_TEST_SOURCES tests/modules/redis/redis.cxx)
+    list(APPEND CLUEAPI_TEST_SOURCES tests/modules/redis/connection/connection.cxx)
 endif()
 
 add_executable(clueapi_tests ${CLUEAPI_TEST_SOURCES})

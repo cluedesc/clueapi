@@ -213,7 +213,7 @@ namespace clueapi {
 
                 m_state.update(state_t::stopped);
 
-                return;
+                throw;
             }
 
             m_start_cv.notify_all();

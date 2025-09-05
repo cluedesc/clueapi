@@ -43,6 +43,31 @@ namespace clueapi::modules::redis::detail {
         std::string m_username{};
 
         /**
+         * @brief The Redis database number to select.
+         */
+        std::int32_t m_db{0};
+
+        /**
+         * @brief Whether to use SSL/TLS for the connection.
+         */
+        bool m_use_ssl{false};
+
+        /**
+         * @brief The connection timeout duration.
+         */
+        std::chrono::seconds m_connect_timeout{5};
+
+        /**
+         * @brief The interval for health check operations.
+         */
+        std::chrono::seconds m_health_check_interval{30};
+
+        /**
+         * @brief The wait interval before attempting reconnection.
+         */
+        std::chrono::seconds m_reconnect_wait_interval{1};
+
+        /**
          * @brief The logging level for Redis operations.
          */
         boost::redis::logger::level m_log_level{boost::redis::logger::level::info};

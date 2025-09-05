@@ -22,13 +22,12 @@ namespace clueapi::modules::redis::detail {
                 if (ec)
                     m_state.set(state_t::error);
 
-                if (m_connection)
-                    m_connection->cancel();
+                cancel_connection();
             });
 
         auto start_time = std::chrono::steady_clock::now();
 
-        constexpr auto k_check_interval = std::chrono::milliseconds{100};
+        constexpr auto k_check_interval = std::chrono::milliseconds{50};
 
         while (std::chrono::steady_clock::now() - start_time < m_cfg.m_connect_timeout) {
             boost::redis::request::config req_cfg{
@@ -52,8 +51,11 @@ namespace clueapi::modules::redis::detail {
 
             auto current_state = m_state.get();
 
-            if (current_state == state_t::error || current_state == state_t::disconnected)
+            if (current_state == state_t::error || current_state == state_t::disconnected) {
+                cancel_connection();
+                
                 co_return false;
+            }
 
             auto timer = boost::asio::steady_timer{m_io_ctx};
 
@@ -64,8 +66,7 @@ namespace clueapi::modules::redis::detail {
 
         m_state.set(state_t::error);
 
-        if (m_connection)
-            m_connection->cancel();
+        cancel_connection();
 
         co_return false;
     }
@@ -76,8 +77,7 @@ namespace clueapi::modules::redis::detail {
         if (current == state_t::disconnected || current == state_t::idle)
             return;
 
-        if (m_connection)
-            m_connection->cancel();
+        cancel_connection();
 
         m_state.set(state_t::disconnected);
     }
@@ -422,5 +422,13 @@ namespace clueapi::modules::redis::detail {
             co_return std::nullopt;
 
         co_return std::get<0>(resp).value();
+    }
+
+    void connection_t::cancel_connection() {
+        if (m_connection) {
+            if (!m_is_cancelled.exchange(true, std::memory_order_acq_rel)) {
+                m_connection->cancel();
+            }
+        }
     }
 } // namespace clueapi::modules::redis::detail
