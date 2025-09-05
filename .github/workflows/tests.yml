@@ -113,11 +113,14 @@ jobs:
         if: steps.cache-boost.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          powershell -Command "Invoke-WebRequest -Uri https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip -OutFile boost_1_87_0.zip"
+          Invoke-WebRequest -Uri https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip -OutFile boost_1_87_0.zip
           Expand-Archive boost_1_87_0.zip -DestinationPath .
           cd boost_1_87_0
-          call bootstrap.bat
-          .\b2.exe -j%NUMBER_OF_PROCESSORS% toolset=msvc address-model=64 --with-system --with-filesystem --with-iostreams --prefix="${{ github.workspace }}/boost_install" install
+          .\bootstrap.bat
+          .\b2.exe -j $env:NUMBER_OF_PROCESSORS `
+            toolset=msvc address-model=64 `
+            --with-system --with-filesystem --with-iostreams `
+            --prefix="${{ github.workspace }}\boost_install" install
 
       - name: Start Redis server
         run: |
