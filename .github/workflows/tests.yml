@@ -123,10 +123,14 @@ jobs:
             --prefix="${{ github.workspace }}\boost_install" install
 
       - name: Start Redis server
+        shell: pwsh
         run: |
-          Start-Process -FilePath "redis-server" -ArgumentList "--port 6379" -NoNewWindow
+          $redisServer = (Get-ChildItem "C:\ProgramData\chocolatey\lib\redis-64" -Recurse -Filter redis-server.exe | Select-Object -First 1).FullName
+          $redisCli    = (Get-ChildItem "C:\ProgramData\chocolatey\lib\redis-64" -Recurse -Filter redis-cli.exe | Select-Object -First 1).FullName
+          
+          Start-Process -FilePath $redisServer -ArgumentList "--port 6379" -NoNewWindow
           Start-Sleep -Seconds 3
-          redis-cli ping
+          & $redisCli ping
 
       - name: Configure CMake
         env:
