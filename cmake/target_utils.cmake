@@ -29,6 +29,12 @@ function(configure_target_rtti TARGET_NAME USE_RTTI)
     endif()
 endfunction()
 
+function(configure_target_encoding TARGET_NAME)
+    target_compile_options(${TARGET_NAME} PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+    )
+endfunction()
+
 function(configure_target_linker TARGET_NAME)
     if(NOT WIN32)
         find_program(MOLD_PATH mold)
@@ -164,6 +170,8 @@ function(configure_target TARGET_NAME)
     if (${ARG_ENABLE_CUSTOM_LINKER})
         configure_target_linker(${TARGET_NAME})
     endif()
+
+    configure_target_encoding(${TARGET_NAME})
     
     configure_target_rtti(${TARGET_NAME} ${ARG_USE_RTTI})
     
