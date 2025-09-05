@@ -81,3 +81,65 @@ jobs:
           export LD_LIBRARY_PATH=${{ github.workspace }}/boost_install/lib:$LD_LIBRARY_PATH
           cd build
           ctest --output-on-failure
+
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install dependencies via Chocolatey
+        run: choco install ninja redis-64 -y
+
+      - name: Setup MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Cache Boost libraries
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/boost_install
+          key: ${{ runner.os }}-msvc-boost-1.87.0
+
+      - name: Build and install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        shell: cmd
+        run: |
+          powershell -Command "Invoke-WebRequest -Uri https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip -OutFile boost_1_87_0.zip"
+          Expand-Archive boost_1_87_0.zip -DestinationPath .
+          cd boost_1_87_0
+          call bootstrap.bat
+          .\b2.exe -j%NUMBER_OF_PROCESSORS% toolset=msvc address-model=64 --with-system --with-filesystem --with-iostreams --prefix="${{ github.workspace }}/boost_install" install
+
+      - name: Start Redis server
+        run: |
+          Start-Process -FilePath "redis-server" -ArgumentList "--port 6379" -NoNewWindow
+          Start-Sleep -Seconds 3
+          redis-cli ping
+
+      - name: Configure CMake
+        env:
+          BOOST_ROOT: ${{ github.workspace }}\boost_install
+          BOOST_LIBRARYDIR: ${{ github.workspace }}\boost_install\lib
+        run: |
+          cmake -S . -B build -G "Ninja" `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DCLUEAPI_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          $env:PATH = "${{ github.workspace }}\boost_install\lib;" + $env:PATH
+          cd build
+          ctest --build-config ${{ matrix.build_type }} --output-on-failure
