@@ -9,7 +9,9 @@
 #ifndef CLUEAPI_CFG_HXX
 #define CLUEAPI_CFG_HXX
 
+#ifdef CLUEAPI_USE_LOGGING_MODULE
 #include "logging/logging.hxx"
+#endif // CLUEAPI_USE_LOGGING_MODULE
 
 /**
  * @namespace clueapi::cfg

@@ -2,15 +2,25 @@ name: tests
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'improve/*'
+      - 'feature/*'
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'improve/*'
+      - 'feature/*'
 
 jobs:
   build-and-test-linux:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
+
       matrix:
         compiler: [g++, clang++]
 
@@ -24,37 +34,113 @@ jobs:
         run: |
           sudo apt-get update
           if [ "${{ matrix.compiler }}" = "clang++" ]; then
-            sudo apt-get install -y cmake clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+            sudo apt-get install -y -qq cmake ninja-build clang-19 clang-tools-19 libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           else
-            sudo apt-get install -y cmake g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev
+            sudo apt-get install -y -qq cmake ninja-build g++ libssl-dev libfmt-dev wget tar libstdc++-14-dev libc++-19-dev liburing-dev libcurl4-openssl-dev redis
           fi
 
+      - name: Cache Boost libraries
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/boost_install
+          key: ${{ runner.os }}-${{ matrix.compiler }}-boost-1.87.0
+
       - name: Build and install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           wget -q https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.gz
           tar xzf boost_1_87_0.tar.gz
           cd boost_1_87_0
-          ./bootstrap.sh --with-libraries=system,filesystem,iostreams
-          ./b2 -j$(nproc)
-          sudo ./b2 install
+          ./bootstrap.sh --prefix=${{ github.workspace }}/boost_install --with-libraries=system,filesystem,iostreams
+          ./b2 -j$(nproc) toolset=$(if [ "${{ matrix.compiler }}" = "clang++" ]; then echo "clang"; else echo "gcc"; fi)
+          ./b2 install --prefix=${{ github.workspace }}/boost_install toolset=$(if [ "${{ matrix.compiler }}" = "clang++" ]; then echo "clang"; else echo "gcc"; fi)
           cd ..
-          sudo ldconfig
+
+      - name: Start Redis server
+        run: |
+          sudo systemctl start redis
+
+          redis-cli ping
 
       - name: Configure CMake
         env:
-          BOOST_ROOT: /usr/local
-          CMAKE_PREFIX_PATH: /usr/local/lib/cmake
+          BOOST_ROOT: ${{ github.workspace }}/boost_install
         run: |
           COMPILER=$([[ "${{ matrix.compiler }}" == "clang++" ]] && echo "/usr/bin/clang++-19" || echo "g++")
-          cmake -S . -B build \
+          cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_COMPILER=${COMPILER} \
-            -DCLUEAPI_RUN_TESTS=ON
+            -DCLUEAPI_BUILD_TESTS=ON
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build --config Release --parallel $(nproc)
 
       - name: Run tests
         run: |
+          export LD_LIBRARY_PATH=${{ github.workspace }}/boost_install/lib:$LD_LIBRARY_PATH
           cd build
           ctest --output-on-failure
+
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install dependencies via Chocolatey
+        run: choco install ninja redis -y
+
+      - name: Setup MSVC developer environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Cache Boost libraries
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/boost_install
+          key: ${{ runner.os }}-msvc-boost-1.87.0
+
+      - name: Build and install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip -OutFile boost_1_87_0.zip
+          Expand-Archive boost_1_87_0.zip -DestinationPath .
+          cd boost_1_87_0
+          .\bootstrap.bat
+          .\b2.exe -j $env:NUMBER_OF_PROCESSORS `
+            toolset=msvc address-model=64 runtime-link=static `
+            --with-system --with-filesystem --with-iostreams `
+            --prefix="${{ github.workspace }}\boost_install" install
+
+      - name: Configure CMake
+        env:
+          BOOST_ROOT: ${{ github.workspace }}\boost_install
+          BOOST_LIBRARYDIR: ${{ github.workspace }}\boost_install\lib
+        run: |
+          cmake -S . -B build -G "Ninja" `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DCLUEAPI_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          Start-Process -FilePath "redis-server" -ArgumentList "--port 6379" -NoNewWindow
+          Start-Sleep -Seconds 3
+          redis-cli ping
+
+          $env:PATH = "${{ github.workspace }}\boost_install\lib;" + $env:PATH
+          cd build
+          ctest --build-config ${{ matrix.build_type }} --output-on-failure

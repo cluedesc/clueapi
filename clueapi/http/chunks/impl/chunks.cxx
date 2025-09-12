@@ -14,7 +14,11 @@ namespace clueapi::http::chunks {
 
         m_buffer.append(k_crlf, k_crlf + k_crlf_size);
 
+#ifndef _WIN32
         m_buffer.append(data.begin(), data.end());
+#else
+        m_buffer.append(data);
+#endif // _WIN32
 
         m_buffer.append(k_crlf, k_crlf + k_crlf_size);
 

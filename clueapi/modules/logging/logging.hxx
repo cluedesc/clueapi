@@ -170,7 +170,7 @@ namespace clueapi::modules::logging {
         /**
          * @brief The internal map of loggers.
          */
-        shared::unordered_map<detail::hash_t, std::shared_ptr<base_logger_t>> m_loggers;
+        shared::unordered_map_t<detail::hash_t, std::shared_ptr<base_logger_t>> m_loggers;
     };
 
     /**
@@ -229,7 +229,8 @@ namespace clueapi::modules::logging {
  * @brief The implementation macro for logging.
  */
 #define CLUEAPI_LOG_IMPL(main_logging, hash, level, message, ...) \
-    (::clueapi::modules::logging::log_dispatch(main_logging, hash, level, message, ##__VA_ARGS__))
+    (::clueapi::modules::logging::log_dispatch(                   \
+        main_logging, hash, level, message, ##__VA_ARGS__))
 
 #endif // CLUEAPI_USE_LOGGING_MODULE
 

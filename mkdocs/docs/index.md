@@ -34,7 +34,7 @@ Future development is focused on enhancing the framework's enterprise-readiness 
 
 * **OpenAPI Integration**: Introduce tooling to automatically generate OpenAPI (Swagger) specifications from route definitions. This will streamline API documentation, client library generation, and automated testing.
 
-* **Database Abstraction Modules**: Develop dedicated, asynchronous modules for popular databases. This will include a fully asynchronous client for **PostgreSQL** with connection pooling and an async-first client for **Redis** to enable high-performance caching and messaging.
+* **Database Abstraction Modules**: Develop dedicated, asynchronous modules for popular databases. This will include a fully asynchronous client for **PostgreSQL** with connection pooling to enable high-performance caching and messaging.
 
 * **Metrics and Observability**: Create a module to expose application and performance metrics in the **Prometheus** format, allowing for seamless integration into modern monitoring, visualization, and alerting pipelines.
 

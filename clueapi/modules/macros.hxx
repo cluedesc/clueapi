@@ -80,8 +80,7 @@
     CLUEAPI_LOG(                                       \
         LOGGER_NAME("clueapi"),                        \
         clueapi::modules::logging::e_log_level::trace, \
-        message,                                       \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_TRACE(message, ...) \
     do {                                \
@@ -101,8 +100,7 @@
     CLUEAPI_LOG(                                       \
         LOGGER_NAME("clueapi"),                        \
         clueapi::modules::logging::e_log_level::debug, \
-        message,                                       \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_DEBUG(message, ...) \
     do {                                \
@@ -122,8 +120,7 @@
     CLUEAPI_LOG(                                      \
         LOGGER_NAME("clueapi"),                       \
         clueapi::modules::logging::e_log_level::info, \
-        message,                                      \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_INFO(message, ...) \
     do {                               \
@@ -143,8 +140,7 @@
     CLUEAPI_LOG(                                         \
         LOGGER_NAME("clueapi"),                          \
         clueapi::modules::logging::e_log_level::warning, \
-        message,                                         \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_WARNING(message, ...) \
     do {                                  \
@@ -164,8 +160,7 @@
     CLUEAPI_LOG(                                       \
         LOGGER_NAME("clueapi"),                        \
         clueapi::modules::logging::e_log_level::error, \
-        message,                                       \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_ERROR(message, ...) \
     do {                                \
@@ -185,8 +180,7 @@
     CLUEAPI_LOG(                                          \
         LOGGER_NAME("clueapi"),                           \
         clueapi::modules::logging::e_log_level::critical, \
-        message,                                          \
-        ##__VA_ARGS__)
+        message, ##__VA_ARGS__)
 #else
 #define CLUEAPI_LOG_CRITICAL(message, ...) \
     do {                                   \

@@ -68,6 +68,7 @@ nav:
   - Modules:
       - Logging: modules/logging.md
       - Dotenv: modules/dotenv.md
+      - Redis: modules/redis.md
 
 plugins:
   - search

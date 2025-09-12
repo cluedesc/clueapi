@@ -22,7 +22,14 @@ namespace clueapi::modules::logging {
     }
 
     void c_logging::destroy() {
-        if (!m_is_running.exchange(false, std::memory_order_release) || !m_cfg.m_async_mode)
+        if (!m_cfg.m_async_mode) {
+            if (!m_loggers.empty())
+                m_loggers.clear();
+
+            return;
+        }
+
+        if (!m_is_running.exchange(false, std::memory_order_release))
             return;
 
         m_condition->notify_all();

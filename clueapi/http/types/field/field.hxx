@@ -14,7 +14,7 @@ namespace clueapi::http::types {
      * @details The key is the field name, and the value is the field's content.
      * It uses a fast, dense hash map for efficient lookups.
      */
-    using fields_t = shared::unordered_map<
+    using fields_t = shared::unordered_map_t<
         std::string,
         std::string,
 

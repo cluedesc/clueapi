@@ -44,9 +44,8 @@ namespace clueapi::http::multipart::detail {
         std::string_view params_sv) noexcept {
         std::vector<std::pair<std::string_view, std::string_view>> params;
 
-        const auto* head = params_sv.begin();
-
-        const auto* const end = params_sv.end();
+        auto head = params_sv.begin();
+        auto const end = params_sv.end();
 
         while (head != end) {
             while (head != end && (*head == ';' || *head == ' '))
@@ -55,13 +54,16 @@ namespace clueapi::http::multipart::detail {
             if (head == end)
                 break;
 
-            const auto* const eq_it = std::find(head, end, '=');
+            const auto eq_it = std::find(head, end, '=');
 
             if (eq_it == end)
                 break;
 
-            auto key =
-                shared::non_copy::trim({head, static_cast<size_t>(std::distance(head, eq_it))});
+            const auto key_start = std::distance(params_sv.begin(), head);
+
+            const auto key_length = std::distance(head, eq_it);
+
+            auto key = shared::non_copy::trim(params_sv.substr(key_start, key_length));
 
             head = eq_it + 1;
 
@@ -70,7 +72,7 @@ namespace clueapi::http::multipart::detail {
             if (head != end && *head == '"') {
                 head++;
 
-                const auto* value_start = head;
+                const auto value_start = head;
 
                 while (head != end) {
                     if (*head == '"')
@@ -82,17 +84,22 @@ namespace clueapi::http::multipart::detail {
                     head++;
                 }
 
-                value = {value_start, static_cast<size_t>(std::distance(value_start, head))};
+                const auto quoted_start = std::distance(params_sv.begin(), value_start);
+                const auto quoted_length = std::distance(value_start, head);
+
+                value = params_sv.substr(quoted_start, quoted_length);
 
                 if (head != end)
                     head++;
             } else {
-                const auto* value_start = head;
+                const auto value_start = head;
 
-                const auto* const semi_it = std::find(head, end, ';');
+                const auto semi_it = std::find(head, end, ';');
 
-                value = shared::non_copy::trim(
-                    {value_start, static_cast<size_t>(std::distance(value_start, semi_it))});
+                const auto unquoted_start = std::distance(params_sv.begin(), value_start);
+                const auto unquoted_length = std::distance(value_start, semi_it);
+                
+                value = shared::non_copy::trim(params_sv.substr(unquoted_start, unquoted_length));
 
                 head = semi_it;
             }

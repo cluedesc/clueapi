@@ -234,8 +234,8 @@ namespace clueapi::http::types {
      *
      * @details The key is the field name from the form, and the value is the `file_t` object.
      */
-    using files_t =
-        shared::unordered_map<std::string, file_t, http::detail::sv_hash_t, http::detail::sv_eq_t>;
+    using files_t = shared::
+        unordered_map_t<std::string, file_t, http::detail::sv_hash_t, http::detail::sv_eq_t>;
 } // namespace clueapi::http::types
 
 #endif // CLUEAPI_HTTP_TYPES_FILE_HXX

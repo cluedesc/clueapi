@@ -19,7 +19,7 @@ namespace clueapi::http::types {
      * @details This uses a fast, dense hash map for efficient lookups.
      * The key is the file extension (e.g., ".html"), and the value is the `mime_type_t`.
      */
-    using mime_map_t = shared::unordered_map<
+    using mime_map_t = shared::unordered_map_t<
         std::string_view,
         mime_type_t,
         http::detail::sv_hash_t,

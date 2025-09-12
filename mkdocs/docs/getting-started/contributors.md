@@ -19,18 +19,15 @@ Before you begin, ensure you have the following dependencies installed on your s
 
 ## Installation
 
-To get started, clone the repository and initialize its submodules. The project uses several third-party libraries which are included as Git submodules.
+### Linux
 
 1. **Clone the repository with submodules:**
 ```bash
 git clone --recurse-submodules https://github.com/cluedesc/clueapi.git
-
 cd clueapi
 ```
 
-2. **Remove unnecessary files from submodules (Op):**
-
-    **Linux (Bash):**
+2. **(Optional) Remove unnecessary files from submodules:**
 ```bash
 for m in clueapi/shared/thirdparty/fmt \
          clueapi/shared/thirdparty/nlohmann_json \
@@ -52,7 +49,15 @@ for m in clueapi/shared/thirdparty/fmt \
 done
 ```
 
-    **Windows (PowerShell):**
+### Windows (PowerShell)
+
+1. **Clone the repository with submodules:**
+```powershell
+git clone --recurse-submodules https://github.com/cluedesc/clueapi.git
+cd clueapi
+```
+
+2. **(Optional) Remove unnecessary files from submodules:**
 ```powershell
 $submodules = @(
     "clueapi/shared/thirdparty/fmt",
@@ -71,11 +76,7 @@ foreach ($m in $submodules) {
         git sparse-checkout set include
     }
 
-    Get-ChildItem -File -Force |
-        Where-Object { $_.Name -ne "include" -and $_.Name -ne "single_include" } |
-        Remove-Item -Recurse -Force
-
-    Get-ChildItem -Directory -Force |
+    Get-ChildItem -Force |
         Where-Object { $_.Name -ne "include" -and $_.Name -ne "single_include" } |
         Remove-Item -Recurse -Force
 
@@ -96,19 +97,27 @@ cmake -B build
 
 * **Customize the build (Optional):** You can pass `-D<option>=<value>` flags to CMake. For example, to disable RTTI:
 ```bash
-cmake -B build -DCLUEAPI_RUN_TESTS=OFF -DCLUEAPI_USE_RTTI=OFF
+cmake -B build -DCLUEAPI_BUILD_TESTS=OFF -DCLUEAPI_USE_RTTI=OFF
 ```
 
 Here are the primary build options available:
 
-| Option                        | Description                                                             | Default |
-| ----------------------------- | ----------------------------------------------------------------------- | ------- |
-| `CLUEAPI_USE_NLOHMANN_JSON`   | Enable nlohmann/json support                                            | `ON`    |
-| `CLUEAPI_USE_LOGGING_MODULE`  | Enable the logging module                                               | `ON`    |
-| `CLUEAPI_USE_DOTENV_MODULE`   | Enable the dotenv module                                                | `ON`    |
-| `CLUEAPI_USE_RTTI`            | Enable Run-Time Type Information                                        | `OFF`   |
-| `CLUEAPI_OPTIMIZED_LOG_LEVEL` | Optimized log level: TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE | `INFO`  |
-| `CLUEAPI_RUN_TESTS`           | Build and enable tests                                                  | `OFF`   |
+| Option                               | Description                                                                  | Default |
+| ------------------------------------ | ---------------------------------------------------------------------------  | ------- |
+| `CLUEAPI_USE_NLOHMANN_JSON`          | Enable **nlohmann/json** support                                             | `ON`    |
+| `CLUEAPI_USE_CUSTOM_JSON`            | Enable **custom JSON** support (overrides `nlohmann/json`)                   | `OFF`   |
+| `CLUEAPI_USE_LOGGING_MODULE`         | Enable the **logging module**                                                | `ON`    |
+| `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `ON`    |
+| `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `ON`    |
+| `CLUEAPI_USE_RTTI`                   | Enable **Run-Time Type Information (RTTI)**                                  | `OFF`   |
+| `CLUEAPI_ENABLE_ASAN`                | Enable **AddressSanitizer (ASan)**                                           | `OFF`   |
+| `CLUEAPI_ENABLE_TSAN`                | Enable **ThreadSanitizer (TSan)**                                            | `OFF`   |
+| `CLUEAPI_ENABLE_UBSAN`               | Enable **UndefinedBehaviorSanitizer (UBSan)**                                | `OFF`   |
+| `CLUEAPI_ENABLE_IPO`                 | Enable **Interprocedural Optimization (IPO/LTO)**                            | `ON`    |
+| `CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS` | Enable **extra compiler optimizations**                                      | `ON`    |
+| `CLUEAPI_ENABLE_WARNINGS`            | Enable **extra compiler warnings**                                           | `OFF`   |
+| `CLUEAPI_BUILD_TESTS`                | Build and enable tests                                                       | `OFF`   |
+| `CLUEAPI_OPTIMIZED_LOG_LEVEL`        | Optimized log level: `TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE`    | `INFO`  |
 
 ---
 
@@ -127,7 +136,7 @@ The compiled library (`libclueapi.a` or `clueapi.so`) and the test runner (`clue
 
 ## Testing
 
-The project has a comprehensive test suite built with GoogleTest to ensure code quality and correctness. The test suite is automatically configured if `CLUEAPI_RUN_TESTS` is `ON`.
+The project has a comprehensive test suite built with GoogleTest to ensure code quality and correctness. The test suite is automatically configured if `CLUEAPI_BUILD_TESTS` is `ON`.
 
 * **Run the tests:** After building the project, you can run all tests using `ctest` from within the build directory.
 ```bash

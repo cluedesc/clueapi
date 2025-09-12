@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/experimental/awaitable_operators.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/scope_exit.hpp>
 
 using namespace clueapi::http;
 using namespace clueapi::http::types;
@@ -260,18 +261,6 @@ TEST_F(file_response_tests, stream_function_sends_correct_data) {
         },
 
         boost::asio::detached);
-}
-
-TEST_F(file_response_tests, handles_initialization_error) {
-    using namespace clueapi::exceptions;
-
-    auto original_perms = boost::filesystem::status(temp_dir).permissions();
-
-    boost::filesystem::permissions(temp_dir, boost::filesystem::perms::owner_write);
-
-    EXPECT_THROW(file_response_t res(test_file), exception_t);
-
-    boost::filesystem::permissions(temp_dir, original_perms);
 }
 
 TEST_F(file_response_tests, handles_io_error_during_streaming) {

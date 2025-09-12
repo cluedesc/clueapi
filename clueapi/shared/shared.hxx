@@ -41,6 +41,22 @@
 #define CLUEAPI_NOINLINE __attribute__((noinline))
 #endif
 
+#ifdef _WIN32
+/**
+ * @brief A formatter for `boost::asio::ip::tcp::socket::native_handle_type`.
+ * 
+ * @details This formatter is used to print `boost::asio::ip::tcp::socket::native_handle_type` objects on Windows platform.
+ */
+template <>
+struct fmt::formatter<boost::asio::ip::tcp::socket::native_handle_type>
+    : fmt::formatter<std::uintptr_t> {
+    template <typename FormatContext>
+    auto format(boost::asio::ip::tcp::socket::native_handle_type handle, FormatContext& ctx) const {
+        return fmt::formatter<std::uintptr_t>::format(static_cast<std::uintptr_t>(handle), ctx);
+    }
+};
+#endif // _WIN32
+
 /**
  * @namespace clueapi::shared
  *
@@ -62,7 +78,7 @@ namespace clueapi::shared {
         typename _type_t,
         typename _hash_t = std::hash<_key_t>,
         typename _eq_t = std::equal_to<_key_t>>
-    using unordered_map = ankerl::unordered_dense::map<_key_t, _type_t, _hash_t, _eq_t>;
+    using unordered_map_t = ankerl::unordered_dense::map<_key_t, _type_t, _hash_t, _eq_t>;
 
     /**
      * @brief Type alias for an awaitable object from Boost.Asio.

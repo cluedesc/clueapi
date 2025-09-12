@@ -144,12 +144,13 @@ namespace clueapi::server {
             }
 
             {
-                m_self->set_keep_alive_timeout(fmt::format(
-                    "timeout={}",
+                m_self->set_keep_alive_timeout(
+                    fmt::format(
+                        "timeout={}",
 
-                    std::chrono::duration_cast<std::chrono::seconds>(
-                        m_cfg.m_http.m_keep_alive_timeout)
-                        .count()));
+                        std::chrono::duration_cast<std::chrono::seconds>(
+                            m_cfg.m_http.m_keep_alive_timeout)
+                            .count()));
             }
 
             try {
@@ -579,7 +580,7 @@ namespace clueapi::server {
             }
 
             if (acceptor_cfg.m_tcp_fast_open) {
-#ifdef TCP_FASTOPEN
+#if defined(TCP_FASTOPEN) && !defined(_WIN32)
                 auto socket_opt =
                     boost::asio::detail::socket_option::boolean<SOL_TCP, TCP_FASTOPEN>(true);
 

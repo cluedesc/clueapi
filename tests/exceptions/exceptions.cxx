@@ -91,17 +91,20 @@ TEST_F(wrap_tests, catches_boost_system_error) {
 
     auto result = wrap<>(
         [] {
-            throw boost::system::system_error(boost::asio::error::make_error_code(boost::asio::error::connection_refused
-            ));
+            throw boost::system::system_error(
+                boost::asio::error::make_error_code(boost::asio::error::connection_refused));
         },
 
-        "network_op"
-    );
+        "network_op");
 
     ASSERT_FALSE(result.has_value());
 
     EXPECT_NE(result.error().find("network_op:"), std::string::npos);
+#ifdef _WIN32
+    EXPECT_NE(result.error().find("No connection could be made because"), std::string::npos);
+#else
     EXPECT_NE(result.error().find("Connection refused"), std::string::npos);
+#endif // _WIN32
 }
 
 TEST_F(wrap_tests, catches_custom_clueapi_exception) {
@@ -125,7 +128,7 @@ TEST_F(wrap_tests, catches_unknown_exception) {
 }
 
 class wrap_awaitable_tests : public ::testing::Test {
-  protected:
+   protected:
     boost::asio::io_context io_context;
 };
 
@@ -136,9 +139,7 @@ TEST_F(wrap_awaitable_tests, success_with_return_value) {
         io_context,
 
         [&]() -> boost::asio::awaitable<void> {
-            auto awaitable = []() -> boost::asio::awaitable<int> {
-                co_return 42;
-            };
+            auto awaitable = []() -> boost::asio::awaitable<int> { co_return 42; };
 
             auto result = co_await wrap_awaitable<int>(awaitable(), "async_test");
 
@@ -147,8 +148,7 @@ TEST_F(wrap_awaitable_tests, success_with_return_value) {
             EXPECT_EQ(result.value(), 42);
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 }
@@ -173,8 +173,7 @@ TEST_F(wrap_awaitable_tests, success_with_void_return) {
             EXPECT_TRUE(result.has_value());
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 
@@ -201,8 +200,7 @@ TEST_F(wrap_awaitable_tests, catches_std_exception) {
             EXPECT_EQ(result.error(), "async_fail: async logic fail");
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 }
@@ -216,8 +214,7 @@ TEST_F(wrap_awaitable_tests, catches_boost_system_error) {
         [&]() -> boost::asio::awaitable<void> {
             auto awaitable = []() -> boost::asio::awaitable<void> {
                 throw boost::system::system_error(
-                    boost::asio::error::make_error_code(boost::asio::error::connection_refused)
-                );
+                    boost::asio::error::make_error_code(boost::asio::error::connection_refused));
 
                 co_return;
             };
@@ -229,11 +226,16 @@ TEST_F(wrap_awaitable_tests, catches_boost_system_error) {
             std::cerr << result.error() << std::endl;
 
             EXPECT_NE(result.error().find("network_op:"), std::string::npos);
+            
+#ifdef _WIN32
+            EXPECT_NE(
+                result.error().find("No connection could be made because"), std::string::npos);
+#else
             EXPECT_NE(result.error().find("Connection refused"), std::string::npos);
+#endif // _WIN32
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 }
@@ -258,8 +260,7 @@ TEST_F(wrap_awaitable_tests, catches_unknown_exception) {
             EXPECT_EQ(result.error(), "async_unknown: unknown");
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 }
@@ -271,20 +272,18 @@ TEST_F(wrap_awaitable_tests, works_with_invocable_that_returns_awaitable) {
         io_context,
         [&]() -> boost::asio::awaitable<void> {
             auto invocable_factory = [] {
-                return []() -> boost::asio::awaitable<std::string> {
-                    co_return "invoked";
-                };
+                return []() -> boost::asio::awaitable<std::string> { co_return "invoked"; };
             };
 
-            auto result = co_await wrap_awaitable<std::string>(invocable_factory(), "invocable_test");
+            auto result =
+                co_await wrap_awaitable<std::string>(invocable_factory(), "invocable_test");
 
             EXPECT_TRUE(result.has_value());
 
             EXPECT_EQ(result.value(), "invoked");
         },
 
-        boost::asio::detached
-    );
+        boost::asio::detached);
 
     io_context.run();
 }

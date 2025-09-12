@@ -167,7 +167,9 @@ namespace clueapi {
 
                         m_signals->add(SIGTERM);
 
+#ifndef _WIN32
                         m_signals->add(SIGQUIT);
+#endif // _WIN32
 
                         m_signals->add(SIGSEGV);
                     }
@@ -213,7 +215,7 @@ namespace clueapi {
 
                 m_state.update(state_t::stopped);
 
-                return;
+                throw;
             }
 
             m_start_cv.notify_all();

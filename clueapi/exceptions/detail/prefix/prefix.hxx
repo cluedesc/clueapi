@@ -67,7 +67,7 @@ namespace clueapi::exceptions::detail {
      *
      * @internal
      */
-    inline constexpr prefix_holder_t<0> k_default_prefix{};
+    inline constexpr prefix_holder_t<1> k_default_prefix{};
 } // namespace clueapi::exceptions::detail
 
 #endif // CLUEAPI_EXCEPTIONS_DETAIL_PREFIX_HXX

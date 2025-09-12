@@ -24,23 +24,46 @@ You have two primary methods for integrating `clueapi` into your project: instal
 
 This method involves building and installing `clueapi` on your system, making it available for any project via CMake's `find_package`.
 
-1.  **Clone and Build `clueapi`**:
-First, clone the `clueapi` repository and its submodules. Then, build and install it.
+#### Linux
 
+1.  **Clone and enter the repository**:
 ```bash
-# Clone the repository
+# Clone the repository and its submodules
 git clone --recurse-submodules [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
-
 cd clueapi
+```
 
-# Configure the build
+2.  **Configure, build, and install**:
+```bash
+# Configure the build for a Release version
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-# Build the project
+# Build with all available processor cores
 cmake --build build -j $(nproc)
 
 # Install the library and headers system-wide
 sudo cmake --install build
+```
+
+#### Windows (PowerShell)
+
+1.  **Clone and enter the repository**:
+```powershell
+# Clone the repository and its submodules
+git clone --recurse-submodules [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
+cd clueapi
+```
+
+2.  **Configure, build, and install**:
+```powershell
+# Configure the build
+cmake -B build
+
+# Build the Release version
+cmake --build build --config Release
+
+# Install the library and headers (requires an Administrator shell)
+cmake --install build --config Release
 ```
 
 2.  **Find `clueapi` in Your Project**:
@@ -65,7 +88,7 @@ include(FetchContent)
 FetchContent_Declare(
     clueapi
     GIT_REPOSITORY [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
-    GIT_TAG main # Or a specific release tag, e.g., v1.0.0
+    GIT_TAG main # Or a specific release tag, e.g., v2.0.0
     GIT_SHALLOW    TRUE
     GIT_SUBMODULES ""   # Let clueapi's build handle its own submodules
 )
@@ -119,14 +142,22 @@ target_link_libraries(my_api_server
 
 You can set options for the build using `-D<option>=<value>` flags.
 
-| Option                        | Description                                                             | Default |
-| ----------------------------- | ----------------------------------------------------------------------- | ------- |
-| `CLUEAPI_USE_NLOHMANN_JSON`   | Enable nlohmann/json support                                            | `ON`    |
-| `CLUEAPI_USE_LOGGING_MODULE`  | Enable the logging module                                               | `ON`    |
-| `CLUEAPI_USE_DOTENV_MODULE`   | Enable the dotenv module                                                | `ON`    |
-| `CLUEAPI_USE_RTTI`            | Enable Run-Time Type Information                                        | `OFF`   |
-| `CLUEAPI_OPTIMIZED_LOG_LEVEL` | Optimized log level: TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE | `INFO`  |
-| `CLUEAPI_RUN_TESTS`           | Build and enable tests                                                  | `OFF`   |
+| Option                               | Description                                                                  | Default |
+| ------------------------------------ | ---------------------------------------------------------------------------  | ------- |
+| `CLUEAPI_USE_NLOHMANN_JSON`          | Enable **nlohmann/json** support                                             | `ON`    |
+| `CLUEAPI_USE_CUSTOM_JSON`            | Enable **custom JSON** support (overrides `nlohmann/json`)                   | `OFF`   |
+| `CLUEAPI_USE_LOGGING_MODULE`         | Enable the **logging module**                                                | `ON`    |
+| `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `ON`    |
+| `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `ON`    |
+| `CLUEAPI_USE_RTTI`                   | Enable **Run-Time Type Information (RTTI)**                                  | `OFF`   |
+| `CLUEAPI_ENABLE_ASAN`                | Enable **AddressSanitizer (ASan)**                                           | `OFF`   |
+| `CLUEAPI_ENABLE_TSAN`                | Enable **ThreadSanitizer (TSan)**                                            | `OFF`   |
+| `CLUEAPI_ENABLE_UBSAN`               | Enable **UndefinedBehaviorSanitizer (UBSan)**                                | `OFF`   |
+| `CLUEAPI_ENABLE_IPO`                 | Enable **Interprocedural Optimization (IPO/LTO)**                            | `ON`    |
+| `CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS` | Enable **extra compiler optimizations**                                      | `ON`    |
+| `CLUEAPI_ENABLE_WARNINGS`            | Enable **extra compiler warnings**                                           | `OFF`   |
+| `CLUEAPI_BUILD_TESTS`                | Build and enable tests                                                       | `OFF`   |
+| `CLUEAPI_OPTIMIZED_LOG_LEVEL`        | Optimized log level: `TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE`    | `INFO`  |
 
 ## Basic Usage
 
@@ -193,6 +224,8 @@ int main() {
 
 After setting up your `CMakeLists.txt` and `main.cxx`, you can build and run your server:
 
+## Linux
+
 ```bash
 # Configure the project
 cmake -B build
@@ -202,6 +235,19 @@ cmake --build build
 
 # Run your server
 ./build/my_api_server
+```
+
+## Windows (PowerShell)
+
+```powershell
+# Configure the project
+cmake -B build
+
+# Build the executable
+cmake --build build --config Release
+
+# Run your server
+./build/Release/my_api_server.exe
 ```
 
 You can now access your server by navigating to `http://127.0.0.1:8080` in your web browser or using a tool like `curl`.

@@ -224,7 +224,7 @@ namespace clueapi::http::types {
     /**
      * @brief Type alias for a map of cookies parsed from a request's `Cookie` header.
      */
-    using req_cookies_t = shared::unordered_map<std::string_view, std::string_view>;
+    using req_cookies_t = shared::unordered_map_t<std::string_view, std::string_view>;
 
     /**
      * @brief Type alias for a vector of raw cookie strings to be sent in a response's `Set-Cookie`
