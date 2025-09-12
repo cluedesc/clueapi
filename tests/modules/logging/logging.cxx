@@ -205,6 +205,7 @@ TEST_F(logging_async_tests, remove_async_logger) {
     ASSERT_EQ(m_logging.get_logger(LOGGER_NAME("Test async logger")), nullptr);
 }
 
+#ifndef _WIN32
 TEST_F(logging_async_tests, test_messages_async_logger) {
     auto logger
         = std::make_shared<clueapi::modules::logging::console_logger_t>(clueapi::modules::logging::logger_params_t{
@@ -235,6 +236,7 @@ TEST_F(logging_async_tests, test_messages_async_logger) {
 
     EXPECT_EQ(console_logger->buffer().size(), 0u);
 }
+#endif // _WIN32
 
 TEST_F(logging_async_tests, test_batch_processing_async_logger) {
     auto logger

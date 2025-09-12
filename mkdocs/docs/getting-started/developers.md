@@ -88,7 +88,7 @@ include(FetchContent)
 FetchContent_Declare(
     clueapi
     GIT_REPOSITORY [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
-    GIT_TAG main # Or a specific release tag, e.g., v2.0.0
+    GIT_TAG main # Or a specific release tag, e.g., v2.1.0
     GIT_SHALLOW    TRUE
     GIT_SUBMODULES ""   # Let clueapi's build handle its own submodules
 )

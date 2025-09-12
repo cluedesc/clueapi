@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(clueapi VERSION 2.0.0 LANGUAGES CXX)
+project(clueapi VERSION 2.1.0 LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 

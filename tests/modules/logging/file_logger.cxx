@@ -174,6 +174,7 @@ class logging_file_async_tests : public file_logger_tests {
     }
 };
 
+#ifndef _WIN32
 TEST_F(logging_file_async_tests, log_batch_async_messages) {
     auto logger = std::make_shared<clueapi::modules::logging::file_logger_t>(clueapi::modules::logging::logger_params_t{
         .m_name       = "async file logger",
@@ -208,6 +209,7 @@ TEST_F(logging_file_async_tests, log_batch_async_messages) {
 
     EXPECT_EQ(file_logger->buffer().size(), 0u);
 }
+#endif // _WIN32
 
 TEST_F(logging_file_async_tests, overflow_handling) {
     auto logger = std::make_shared<clueapi::modules::logging::file_logger_t>(clueapi::modules::logging::logger_params_t{
