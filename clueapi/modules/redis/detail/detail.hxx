@@ -3,6 +3,8 @@
 
 #include "cfg/cfg.hxx"
 
+#include "base_connection/base_connection.hxx"
+
 #include "connection/connection.hxx"
 
 namespace clueapi::modules::redis::detail {

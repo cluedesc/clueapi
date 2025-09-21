@@ -1,10 +1,13 @@
 /**
  * @file connection.hxx
  *
- * @brief Defines the Redis connection management for the Redis module.
+ * @brief Defines the asynchronous/synchronous Redis connection wrapper.
  *
- * @details This file provides a wrapper around boost::redis::connection with
- * automatic connection management, health checking, and high-level Redis operations.
+ * @details This file provides a high-level, coroutine-based and blocking interfaces for interacting
+ * with a Redis server. It inherits from `base_connection_t` and adds asynchronous
+ * command execution.
+ *
+ * @internal
  */
 
 #ifndef CLUEAPI_MODULES_REDIS_DETAIL_CONNECTION_HXX
@@ -12,214 +15,59 @@
 
 namespace clueapi::modules::redis::detail {
     /**
-     * @brief A type alias for the raw Redis connection.
-     *
-     * @internal
-     */
-    using raw_connection_t = std::shared_ptr<boost::redis::connection>;
-
-    /**
      * @struct connection_t
      *
-     * @brief Manages Redis connections with automatic reconnection and state tracking.
+     * @brief A Redis connection wrapper for asynchronous/synchronous operations.
      *
-     * @details This class provides a high-level interface for Redis operations with
-     * built-in connection management, health checking, and automatic reconnection.
-     * It supports both basic Redis operations and advanced features like hash operations
-     * and list operations.
+     * @details Provides a coroutine-based and blocking API for executing Redis commands.
      *
      * @internal
      */
-    struct connection_t {
-        /**
-         * @struct state_t
-         *
-         * @brief Manages the connection state in a thread-safe manner.
-         *
-         * @details Provides atomic operations for connection state management,
-         * ensuring thread-safe access to the current connection status.
-         *
-         * @internal
-         */
-        struct state_t {
-            /**
-             * @enum e_state
-             *
-             * @brief Defines the possible connection states.
-             *
-             * @internal
-             */
-            enum e_state { idle, connecting, connected, disconnected, error, unknown };
+    struct connection_t : base_connection_t {
+        using base_t = base_connection_t;
 
-           public:
-            CLUEAPI_INLINE state_t() = default;
-
-            /**
-             * @brief Constructs a state with the given initial state.
-             *
-             * @param state The initial connection state.
-             */
-            CLUEAPI_INLINE state_t(e_state state) : m_state{state} {
-            }
-
-           public:
-            /**
-             * @brief Gets the current connection state.
-             *
-             * @return The current connection state.
-             */
-            CLUEAPI_INLINE e_state get() const noexcept {
-                return m_state.load(std::memory_order_acquire);
-            }
-
-            /**
-             * @brief Sets the connection state.
-             *
-             * @param state The new connection state.
-             */
-            CLUEAPI_INLINE void set(e_state state) noexcept {
-                m_state.store(state, std::memory_order_release);
-            }
-
-            /**
-             * @brief Atomically compares and exchanges the connection state.
-             *
-             * @param expected The expected current state.
-             * @param desired The desired new state.
-             *
-             * @return `true` if the exchange was successful, `false` otherwise.
-             */
-            CLUEAPI_INLINE bool compare_exchange_strong(
-                e_state expected, e_state desired) noexcept {
-                return m_state.compare_exchange_strong(
-                    expected, desired, std::memory_order_acq_rel);
-            }
-
-           private:
-            /**
-             * @brief The atomic connection state.
-             */
-            std::atomic<e_state> m_state{e_state::idle};
-        };
-
-        /**
-         * @struct cfg_t
-         *
-         * @brief Configuration parameters for Redis connection.
-         *
-         * @details Contains all necessary configuration options for establishing
-         * and maintaining a Redis connection, including authentication, timeouts,
-         * and connection parameters.
-         *
-         * @internal
-         */
-        struct cfg_t {
-            /**
-             * @brief The Redis server hostname or IP address.
-             */
-            std::string m_host{"127.0.0.1"};
-
-            /**
-             * @brief The Redis server port.
-             */
-            std::string m_port{"6379"};
-
-            /**
-             * @brief The username for Redis authentication.
-             */
-            std::string m_username{"default"};
-
-            /**
-             * @brief The password for Redis authentication.
-             */
-            std::string m_password{};
-
-            /**
-             * @brief The client name identifier.
-             */
-            std::string m_client_name{"client-name"};
-
-            /**
-             * @brief The unique client UUID.
-             */
-            std::string m_uuid{"client-uuid"};
-
-            /**
-             * @brief The Redis database number to select.
-             */
-            std::int32_t m_db{0};
-
-            /**
-             * @brief The connection timeout duration.
-             */
-            std::chrono::seconds m_connect_timeout{5};
-
-            /**
-             * @brief The interval for health check operations.
-             */
-            std::chrono::seconds m_health_check_interval{30};
-
-            /**
-             * @brief The wait interval before attempting reconnection.
-             */
-            std::chrono::seconds m_reconnect_wait_interval{1};
-
-            /**
-             * @brief The logging level for Redis operations.
-             */
-            boost::redis::logger::level m_log_level{boost::redis::logger::level::info};
-
-            /**
-             * @brief Whether to use SSL/TLS for the connection.
-             */
-            bool m_use_ssl{false};
-        };
-
-       public:
         CLUEAPI_INLINE connection_t() = delete;
 
         /**
          * @brief Constructs a Redis connection with the given configuration.
          *
          * @param cfg The connection configuration.
-         * @param io_ctx The Boost.Asio I/O context for async operations.
+         * @param io_ctx The Boost.Asio I/O context for operations.
          */
         CLUEAPI_INLINE connection_t(cfg_t cfg, boost::asio::io_context& io_ctx)
-            : m_cfg{std::move(cfg)},
-              m_state{state_t::idle},
-              m_io_ctx{io_ctx},
-              m_connection{std::make_shared<boost::redis::connection>(io_ctx)} {
-        }
-
-        /**
-         * @brief Destructs the connection, ensuring proper cleanup.
-         */
-        CLUEAPI_INLINE ~connection_t() {
-            disconnect();
+            : base_t{cfg, io_ctx} {
         }
 
        public:
         /**
-         * @brief Establishes a connection to the Redis server.
+         * @brief Establishes asynchronously a connection to the Redis server.
          *
          * @return An awaitable that resolves to `true` if connection was successful, `false`
          * otherwise.
          */
-        shared::awaitable_t<bool> connect();
+        shared::awaitable_t<bool> async_connect();
 
         /**
-         * @brief Checks if the connection is alive and responsive.
+         * @brief Checks asynchronously if the connection is alive and responsive.
          *
          * @return An awaitable that resolves to `true` if the connection is alive, `false`
          * otherwise.
          */
-        shared::awaitable_t<bool> check_alive();
+        shared::awaitable_t<bool> async_check_alive();
 
-       public:
         /**
-         * @brief Disconnects from the Redis server and cleans up resources.
+         * @brief Establishes synchronously a connection to the Redis server.
+         *
+         * @return A `true` if connection was successful, `false` otherwise.
          */
-        void disconnect();
+        bool sync_connect();
+
+        /**
+         * @brief Checks synchronously if the connection is alive and responsive.
+         *
+         * @return A`true` if the connection is alive, `false` otherwise.
+         */
+        bool sync_check_alive();
 
        public:
         /**
@@ -244,6 +92,33 @@ namespace clueapi::modules::redis::detail {
         }
 
         /**
+         * @brief Executes a Redis request synchronously.
+         *
+         * @tparam _tuple_t The response tuple types.
+         *
+         * @param req The Redis request to execute.
+         * @param resp The response object to populate.
+         *
+         * @return A error code indicating the result of the operation.
+         */
+        template <typename... _tuple_t>
+        CLUEAPI_NOINLINE boost::system::error_code exec(
+            const boost::redis::request& req, boost::redis::response<_tuple_t...>& resp) {
+            boost::system::error_code ec{};
+
+            try {
+                auto fut = m_connection->async_exec(req, resp, boost::asio::use_future);
+
+                fut.get();
+            } catch (const boost::system::system_error& e) {
+                ec = e.code();
+            }
+
+            return ec;
+        }
+
+       public:
+        /**
          * @brief Gets a value from Redis by key.
          *
          * @tparam _type_t The expected type of the value.
@@ -253,7 +128,7 @@ namespace clueapi::modules::redis::detail {
          * @return An awaitable that resolves to the value if found, `std::nullopt` otherwise.
          */
         template <typename _type_t>
-        CLUEAPI_NOINLINE shared::awaitable_t<std::optional<_type_t>> get(
+        CLUEAPI_NOINLINE shared::awaitable_t<std::optional<_type_t>> async_get(
             const std::string_view& key) {
             boost::redis::request req{};
 
@@ -269,6 +144,31 @@ namespace clueapi::modules::redis::detail {
             co_return std::get<0>(resp).value();
         }
 
+        /**
+         * @brief Gets a value from Redis by key.
+         *
+         * @tparam _type_t The expected type of the value.
+         *
+         * @param key The key to retrieve.
+         *
+         * @return A value if found, `std::nullopt` otherwise.
+         */
+        template <typename _type_t>
+        CLUEAPI_NOINLINE std::optional<_type_t> sync_get(const std::string_view& key) {
+            boost::redis::request req{};
+
+            req.push("GET", key);
+
+            boost::redis::response<std::optional<_type_t>> resp{};
+
+            auto ec = exec(req, resp);
+
+            if (ec)
+                return std::nullopt;
+
+            return std::get<0>(resp).value();
+        }
+
        public:
         /**
          * @brief Sets a key-value pair in Redis with optional TTL.
@@ -279,7 +179,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if successful, `false` otherwise.
          */
-        shared::awaitable_t<bool> set(
+        shared::awaitable_t<bool> async_set(
             const std::string_view& key,
             const std::string_view& value,
 
@@ -292,7 +192,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if the key was deleted, `false` otherwise.
          */
-        shared::awaitable_t<bool> del(const std::string_view& key);
+        shared::awaitable_t<bool> async_del(const std::string_view& key);
 
         /**
          * @brief Checks if a key exists in Redis.
@@ -301,7 +201,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if the key exists, `false` otherwise.
          */
-        shared::awaitable_t<bool> exists(const std::string_view& key);
+        shared::awaitable_t<bool> async_exists(const std::string_view& key);
 
         /**
          * @brief Sets the TTL for a key.
@@ -311,7 +211,8 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if successful, `false` otherwise.
          */
-        shared::awaitable_t<bool> expire(const std::string_view& key, std::chrono::seconds ttl);
+        shared::awaitable_t<bool> async_expire(
+            const std::string_view& key, std::chrono::seconds ttl);
 
         /**
          * @brief Gets the TTL of a key.
@@ -320,7 +221,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the TTL in seconds, or -1 if no TTL is set.
          */
-        shared::awaitable_t<std::int32_t> ttl(const std::string_view& key);
+        shared::awaitable_t<std::int32_t> async_ttl(const std::string_view& key);
 
         /**
          * @brief Pushes a value to the left of a list.
@@ -330,7 +231,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the new length of the list.
          */
-        shared::awaitable_t<std::int32_t> lpush(
+        shared::awaitable_t<std::int32_t> async_lpush(
             const std::string_view& key, const std::string_view& value);
 
         /**
@@ -342,7 +243,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if successful, `false` otherwise.
          */
-        shared::awaitable_t<bool> ltrim(
+        shared::awaitable_t<bool> async_ltrim(
             const std::string_view& key, std::int32_t start, std::int32_t end);
 
         /**
@@ -354,7 +255,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to a vector of list elements.
          */
-        shared::awaitable_t<std::vector<std::string>> lrange(
+        shared::awaitable_t<std::vector<std::string>> async_lrange(
             const std::string_view& key, std::int32_t start, std::int32_t end);
 
         /**
@@ -365,7 +266,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the number of fields that were added.
          */
-        shared::awaitable_t<std::int32_t> hset(
+        shared::awaitable_t<std::int32_t> async_hset(
             const std::string_view& key,
             const std::unordered_map<std::string_view, std::string_view>& mapping);
 
@@ -377,7 +278,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the number of fields that were removed.
          */
-        shared::awaitable_t<std::int32_t> hdel(
+        shared::awaitable_t<std::int32_t> async_hdel(
             const std::string_view& key, const std::vector<std::string_view>& fields);
 
         /**
@@ -389,7 +290,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to 1 if a new field was created, 0 if updated.
          */
-        shared::awaitable_t<std::int32_t> hsetfield(
+        shared::awaitable_t<std::int32_t> async_hsetfield(
             const std::string_view& key,
             const std::string_view& field,
             const std::string_view& value);
@@ -401,7 +302,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to a map of all field-value pairs.
          */
-        shared::awaitable_t<std::unordered_map<std::string, std::string>> hgetall(
+        shared::awaitable_t<std::unordered_map<std::string, std::string>> async_hgetall(
             const std::string_view& key);
 
         /**
@@ -413,7 +314,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the new value of the field.
          */
-        shared::awaitable_t<std::int32_t> hincrby(
+        shared::awaitable_t<std::int32_t> async_hincrby(
             const std::string_view& key, const std::string_view& field, std::int32_t increment);
 
         /**
@@ -424,7 +325,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to the field value if found, `std::nullopt` otherwise.
          */
-        shared::awaitable_t<std::optional<std::string>> hget(
+        shared::awaitable_t<std::optional<std::string>> async_hget(
             const std::string_view& key, const std::string_view& field);
 
         /**
@@ -435,7 +336,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return An awaitable that resolves to `true` if the field exists, `false` otherwise.
          */
-        shared::awaitable_t<bool> hexists(
+        shared::awaitable_t<bool> async_hexists(
             const std::string_view& key, const std::string_view& field);
 
         /**
@@ -446,7 +347,7 @@ namespace clueapi::modules::redis::detail {
          * @return An awaitable that resolves to the new value if successful, `std::nullopt`
          * otherwise.
          */
-        shared::awaitable_t<std::optional<std::int32_t>> incr(const std::string_view& key);
+        shared::awaitable_t<std::optional<std::int32_t>> async_incr(const std::string_view& key);
 
         /**
          * @brief Decrements a key's value by 1.
@@ -456,87 +357,193 @@ namespace clueapi::modules::redis::detail {
          * @return An awaitable that resolves to the new value if successful, `std::nullopt`
          * otherwise.
          */
-        shared::awaitable_t<std::optional<std::int32_t>> decr(const std::string_view& key);
+        shared::awaitable_t<std::optional<std::int32_t>> async_decr(const std::string_view& key);
 
        public:
         /**
-         * @brief Checks if the connection is alive and ready for operations.
+         * @brief Sets a key-value pair in Redis with optional TTL.
          *
-         * @return `true` if the connection is alive, `false` otherwise.
-         */
-        CLUEAPI_INLINE bool is_alive() const noexcept {
-            return m_state.get() == state_t::connected;
-        }
-
-        /**
-         * @brief Gets the connection configuration.
+         * @param key The key to set.
+         * @param value The value to associate with the key.
+         * @param ttl The time-to-live for the key (0 for no expiration).
          *
-         * @return The connection configuration.
+         * @return A `true` if successful, `false` otherwise.
          */
-        CLUEAPI_INLINE const auto& cfg() const noexcept {
-            return m_cfg;
-        }
+        bool sync_set(
+            const std::string_view& key,
+            const std::string_view& value,
+
+            std::chrono::seconds ttl = std::chrono::seconds{0});
 
         /**
-         * @brief Gets the current connection state.
+         * @brief Deletes a key from Redis.
          *
-         * @return The current connection state.
-         */
-        CLUEAPI_INLINE state_t::e_state state() const noexcept {
-            return m_state.get();
-        }
-
-        /**
-         * @brief Gets the underlying raw Redis connection.
+         * @param key The key to delete.
          *
-         * @return A shared pointer to the raw connection.
+         * @return A `true` if the key was deleted, `false` otherwise.
          */
-        CLUEAPI_INLINE raw_connection_t raw_connection() const noexcept {
-            return m_connection;
-        }
-
-       private:
-        /**
-         * @brief Builds the raw configuration for the underlying Redis connection.
-         */
-        void build_raw_cfg();
+        bool sync_del(const std::string_view& key);
 
         /**
-         * @brief Cancels the underlying Redis connection.
+         * @brief Checks if a key exists in Redis.
+         *
+         * @param key The key to check.
+         *
+         * @return A `true` if the key exists, `false` otherwise.
          */
-        void cancel_connection();
-
-       private:
-        /**
-         * @brief Reference to the I/O context for async operations.
-         */
-        boost::asio::io_context& m_io_ctx;
+        bool sync_exists(const std::string_view& key);
 
         /**
-         * @brief The connection configuration.
+         * @brief Sets the TTL for a key.
+         *
+         * @param key The key to set expiration for.
+         * @param ttl The time-to-live duration.
+         *
+         * @return A `true` if successful, `false` otherwise.
          */
-        cfg_t m_cfg;
+        bool sync_expire(const std::string_view& key, std::chrono::seconds ttl);
 
         /**
-         * @brief The raw Redis configuration.
+         * @brief Gets the TTL of a key.
+         *
+         * @param key The key to check.
+         *
+         * @return A TTL in seconds, or -1 if no TTL is set.
          */
-        boost::redis::config m_raw_cfg;
+        std::int32_t sync_ttl(const std::string_view& key);
 
         /**
-         * @brief The current connection state.
+         * @brief Pushes a value to the left of a list.
+         *
+         * @param key The list key.
+         * @param value The value to push.
+         *
+         * @return A new length of the list.
          */
-        state_t m_state;
+        std::int32_t sync_lpush(const std::string_view& key, const std::string_view& value);
 
         /**
-         * @brief Whether the connection has been cancelled.
+         * @brief Trims a list to the specified range.
+         *
+         * @param key The list key.
+         * @param start The start index (inclusive).
+         * @param end The end index (inclusive).
+         *
+         * @return A `true` if successful, `false` otherwise.
          */
-        std::atomic_bool m_is_cancelled{false};
+        bool sync_ltrim(const std::string_view& key, std::int32_t start, std::int32_t end);
 
         /**
-         * @brief The underlying Redis connection.
+         * @brief Gets a range of elements from a list.
+         *
+         * @param key The list key.
+         * @param start The start index (inclusive).
+         * @param end The end index (inclusive).
+         *
+         * @return A vector of list elements.
          */
-        raw_connection_t m_connection;
+        std::vector<std::string> sync_lrange(
+            const std::string_view& key, std::int32_t start, std::int32_t end);
+
+        /**
+         * @brief Sets multiple fields in a hash.
+         *
+         * @param key The hash key.
+         * @param mapping The field-value mappings to set.
+         *
+         * @return A number of fields that were added.
+         */
+        std::int32_t sync_hset(
+            const std::string_view& key,
+            const std::unordered_map<std::string_view, std::string_view>& mapping);
+
+        /**
+         * @brief Deletes fields from a hash.
+         *
+         * @param key The hash key.
+         * @param fields The fields to delete.
+         *
+         * @return A number of fields that were removed.
+         */
+        std::int32_t sync_hdel(
+            const std::string_view& key, const std::vector<std::string_view>& fields);
+
+        /**
+         * @brief Sets a single field in a hash.
+         *
+         * @param key The hash key.
+         * @param field The field name.
+         * @param value The field value.
+         *
+         * @return A 1 if a new field was created, 0 if updated.
+         */
+        std::int32_t sync_hsetfield(
+            const std::string_view& key,
+            const std::string_view& field,
+            const std::string_view& value);
+
+        /**
+         * @brief Gets all fields and values from a hash.
+         *
+         * @param key The hash key.
+         *
+         * @return A map of all field-value pairs.
+         */
+        std::unordered_map<std::string, std::string> sync_hgetall(const std::string_view& key);
+
+        /**
+         * @brief Increments a hash field by the given amount.
+         *
+         * @param key The hash key.
+         * @param field The field name.
+         * @param increment The amount to increment by.
+         *
+         * @return A new value of the field.
+         */
+        std::int32_t sync_hincrby(
+            const std::string_view& key, const std::string_view& field, std::int32_t increment);
+
+        /**
+         * @brief Gets the value of a hash field.
+         *
+         * @param key The hash key.
+         * @param field The field name.
+         *
+         * @return A field value if found, `std::nullopt` otherwise.
+         */
+        std::optional<std::string> sync_hget(
+            const std::string_view& key, const std::string_view& field);
+
+        /**
+         * @brief Checks if a hash field exists.
+         *
+         * @param key The hash key.
+         * @param field The field name.
+         *
+         * @return A `true` if the field exists, `false` otherwise.
+         */
+        bool sync_hexists(const std::string_view& key, const std::string_view& field);
+
+        /**
+         * @brief Increments a key's value by 1.
+         *
+         * @param key The key to increment.
+         *
+         * @return A new value if successful, `std::nullopt`
+         * otherwise.
+         */
+        std::optional<std::int32_t> sync_incr(const std::string_view& key);
+
+        /**
+         * @brief Decrements a key's value by 1.
+         *
+         * @param key The key to decrement.
+         *
+         * @return A new value if successful, `std::nullopt`
+         * otherwise.
+         */
+        std::optional<std::int32_t> sync_decr(const std::string_view& key);
     };
 } // namespace clueapi::modules::redis::detail
 
-#endif // CLUEAPI_MODULES_REDIS_DETAIL_CONNECTION_HXX
+#endif // CLUEAPI_MODULES_REDIS_DETAIL_ASYNC_CONNECTION_HXX

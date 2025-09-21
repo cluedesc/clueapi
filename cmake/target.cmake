@@ -48,12 +48,10 @@ target_include_directories(clueapi
         ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared
 )
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared/pch/pch.hxx")
-    target_precompile_headers(clueapi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared/pch/pch.hxx)
-endif()
-
 target_link_libraries(clueapi PUBLIC Boost::system Boost::filesystem Boost::iostreams)
 
 target_link_libraries(clueapi PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 
 target_link_libraries(clueapi PUBLIC Threads::Threads)
+
+target_precompile_headers(clueapi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared/pch/pch.hxx)

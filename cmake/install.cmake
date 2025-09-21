@@ -30,6 +30,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared/thirdparty/tl-expec
 )
 
 if(CLUEAPI_USE_NLOHMANN_JSON)
+    add_compile_definitions(CLUEAPI_USE_NLOHMANN_JSON)
+
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/shared/thirdparty/nlohmann_json/
         DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/thirdparty/nlohmann_json
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hxx" PATTERN "*.hpp"
@@ -37,7 +39,7 @@ if(CLUEAPI_USE_NLOHMANN_JSON)
 endif()
 
 if (CLUEAPI_USE_LOGGING_MODULE)
-    target_compile_definitions(clueapi PUBLIC CLUEAPI_USE_LOGGING_MODULE)
+    add_compile_definitions(CLUEAPI_USE_LOGGING_MODULE)
 
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/modules/logging/
         DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/modules/logging
@@ -46,7 +48,9 @@ if (CLUEAPI_USE_LOGGING_MODULE)
 endif()
 
 if (CLUEAPI_USE_DOTENV_MODULE)
-    target_compile_definitions(clueapi PUBLIC CLUEAPI_USE_DOTENV_MODULE)
+    add_compile_definitions(CLUEAPI_USE_DOTENV_MODULE)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCLUEAPI_USE_DOTENV_MODULE")
 
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/modules/dotenv/
         DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/modules/dotenv
@@ -55,7 +59,7 @@ if (CLUEAPI_USE_DOTENV_MODULE)
 endif()
 
 if (CLUEAPI_USE_REDIS_MODULE)
-    target_compile_definitions(clueapi PUBLIC CLUEAPI_USE_REDIS_MODULE)
+    add_compile_definitions(CLUEAPI_USE_REDIS_MODULE)
 
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/modules/redis/
         DESTINATION ${CLUEAPI_INSTALL_INCLUDEDIR}/modules/redis
