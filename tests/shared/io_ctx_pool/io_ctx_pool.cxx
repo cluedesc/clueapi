@@ -1,6 +1,14 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <atomic>
+#include <boost/asio/post.hpp>
+#include <chrono>
+#include <future>
+#include <thread>
+#include <vector>
+#include <algorithm>
+
+#include "clueapi/shared/io_ctx_pool/io_ctx_pool.hxx"
 
 class io_ctx_pool_tests : public ::testing::Test {
   protected:

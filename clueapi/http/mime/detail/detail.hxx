@@ -9,6 +9,12 @@
 #ifndef CLUEAPI_HTTP_MIME_DETAIL_HXX
 #define CLUEAPI_HTTP_MIME_DETAIL_HXX
 
+#include <array>
+#include <string_view>
+#include <utility>
+
+#include "clueapi/http/types/mime/mime.hxx"
+
 /**
  * @namespace clueapi::http::mime::detail
  *

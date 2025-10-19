@@ -7,6 +7,19 @@
 #ifndef CLUEAPI_HTTP_TYPES_REQUEST_HXX
 #define CLUEAPI_HTTP_TYPES_REQUEST_HXX
 
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/http/types/basic/basic.hxx"
+#include "clueapi/http/types/cookie/cookie.hxx"
+#include "clueapi/http/types/method/method.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::http::types {
     /**
      * @struct request_t

@@ -88,9 +88,9 @@ include(FetchContent)
 FetchContent_Declare(
     clueapi
     GIT_REPOSITORY [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
-    GIT_TAG main # Or a specific release tag, e.g., v2.2.0
+    GIT_TAG main # Or a specific release tag, e.g., v3.0.0
     GIT_SHALLOW    TRUE
-    GIT_SUBMODULES ""   # Let clueapi's build handle its own submodules
+    GIT_SUBMODULES_RECURSE TRUE
 )
 
 FetchContent_MakeAvailable(clueapi)
@@ -123,7 +123,7 @@ FetchContent_Declare(
     GIT_REPOSITORY [https://github.com/cluedesc/clueapi.git](https://github.com/cluedesc/clueapi.git)
     GIT_TAG main
     GIT_SHALLOW    TRUE
-    GIT_SUBMODULES ""
+    GIT_SUBMODULES_RECURSE TRUE
 )
 
 FetchContent_MakeAvailable(clueapi)
@@ -149,13 +149,6 @@ You can set options for the build using `-D<option>=<value>` flags.
 | `CLUEAPI_USE_LOGGING_MODULE`         | Enable the **logging module**                                                | `ON`    |
 | `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `ON`    |
 | `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `ON`    |
-| `CLUEAPI_USE_RTTI`                   | Enable **Run-Time Type Information (RTTI)**                                  | `OFF`   |
-| `CLUEAPI_ENABLE_ASAN`                | Enable **AddressSanitizer (ASan)**                                           | `OFF`   |
-| `CLUEAPI_ENABLE_TSAN`                | Enable **ThreadSanitizer (TSan)**                                            | `OFF`   |
-| `CLUEAPI_ENABLE_UBSAN`               | Enable **UndefinedBehaviorSanitizer (UBSan)**                                | `OFF`   |
-| `CLUEAPI_ENABLE_IPO`                 | Enable **Interprocedural Optimization (IPO/LTO)**                            | `ON`    |
-| `CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS` | Enable **extra compiler optimizations**                                      | `ON`    |
-| `CLUEAPI_ENABLE_WARNINGS`            | Enable **extra compiler warnings**                                           | `OFF`   |
 | `CLUEAPI_BUILD_TESTS`                | Build and enable tests                                                       | `OFF`   |
 | `CLUEAPI_OPTIMIZED_LOG_LEVEL`        | Optimized log level: `TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE`    | `INFO`  |
 
@@ -165,6 +158,7 @@ Here is a simple example of a "Hello, World!" server. Save this code as `main.cx
 
 ```cpp
 #include <clueapi.hxx>
+
 #include <iostream>
 
 // A simple synchronous handler for the root path.

@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <cstdio>
+#include <fstream>
+#include <string>
+
+#include "clueapi/modules/dotenv/dotenv.hxx"
+#include "clueapi/modules/dotenv/detail/hash/hash.hxx"
 
 class dotenv_tests : public ::testing::Test {
   protected:

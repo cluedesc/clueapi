@@ -7,6 +7,21 @@
 #ifndef CLUEAPI_SERVER_CLIENT_DETAIL_DETAIL_HXX
 #define CLUEAPI_SERVER_CLIENT_DETAIL_DETAIL_HXX
 
+#include <boost/asio/error.hpp>
+#include <boost/asio/experimental/awaitable_operators.hpp>
+#include <boost/asio/redirect_error.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/beast/http/error.hpp>
+
+#include "clueapi/exceptions/exceptions.hxx"
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/modules/macros.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 /**
  * @namespace clueapi::server::client::detail
  *
@@ -105,9 +120,5 @@ namespace clueapi::server::client::detail {
 } // namespace clueapi::server::client::detail
 
 #include "data/data.hxx"
-
-#include "request_handler/request_handler.hxx"
-
-#include "response_handler/response_handler.hxx"
 
 #endif // CLUEAPI_SERVER_CLIENT_DETAIL_DETAIL_HXX

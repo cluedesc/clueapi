@@ -7,6 +7,17 @@
 #ifndef CLUEAPI_ROUTE_HXX
 #define CLUEAPI_ROUTE_HXX
 
+#include <utility>
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/ctx/ctx.hxx"
+#include "clueapi/http/types/method/method.hxx"
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 #include "detail/detail.hxx"
 
 /**

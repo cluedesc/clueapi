@@ -7,6 +7,28 @@
 #ifndef CLUEAPI_SERVER_CLIENT_DETAIL_REQUEST_HANDLER_HXX
 #define CLUEAPI_SERVER_CLIENT_DETAIL_REQUEST_HANDLER_HXX
 
+#include <cstdint>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/http/empty_body.hpp>
+#include <boost/beast/http/parser.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
+// Forward declarations
+namespace clueapi {
+    namespace cfg {
+        struct cfg_t;
+    }
+
+    namespace server::client::detail {
+        struct data_t;
+    }
+} // namespace clueapi
+
 namespace clueapi::server::client::detail {
     /**
      * @brief The error codes for the request handler.
@@ -64,9 +86,7 @@ namespace clueapi::server::client::detail {
          * @return The error code of the request.
          */
         exceptions::expected_awaitable_t<e_error_code> stream_handle(
-            boost::beast::http::request_parser<boost::beast::http::empty_body>&& hdr_parser,
-            boost::filesystem::path path,
-            std::size_t content_length);
+            boost::filesystem::path path, std::size_t content_length);
 
        private:
         /**

@@ -11,8 +11,16 @@
 #ifndef CLUEAPI_SHARED_JSON_TRAITS_HXX
 #define CLUEAPI_SHARED_JSON_TRAITS_HXX
 
-namespace clueapi::shared {
 #if defined(CLUEAPI_USE_NLOHMANN_JSON) && !defined(CLUEAPI_USE_CUSTOM_JSON)
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "clueapi/shared/macros.hxx"
+
+#include <nlohmann/json.hpp>
+
+namespace clueapi::shared {
     /**
      * @struct json_traits_t
      *

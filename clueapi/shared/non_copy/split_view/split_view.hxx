@@ -12,6 +12,11 @@
 #ifndef CLUEAPI_SHARED_NON_COPY_SPLIT_VIEW_HXX
 #define CLUEAPI_SHARED_NON_COPY_SPLIT_VIEW_HXX
 
+#include <iterator>
+#include <string_view>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::shared::non_copy {
     /**
      * @struct split_view_t

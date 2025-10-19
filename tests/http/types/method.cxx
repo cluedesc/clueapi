@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include "clueapi/http/types/method/method.hxx"
 
 class method_tests : public ::testing::Test {};
 

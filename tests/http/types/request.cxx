@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <optional>
+
+#include "clueapi/http/types/method/method.hxx"
+#include "clueapi/http/types/request/request.hxx"
 
 class request_tests : public ::testing::Test {
   protected:

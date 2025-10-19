@@ -7,6 +7,12 @@
 #ifndef CLUEAPI_HTTP_TYPES_METHOD_HXX
 #define CLUEAPI_HTTP_TYPES_METHOD_HXX
 
+#include <array>
+#include <string_view>
+#include <cstdint>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::http::types {
     /**
      * @struct method_t

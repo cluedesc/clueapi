@@ -10,6 +10,8 @@
 #ifndef CLUEAPI_MODULES_LOGGING_DETAIL_HASH_HXX
 #define CLUEAPI_MODULES_LOGGING_DETAIL_HASH_HXX
 
+#include "clueapi/shared/macros.hxx"
+
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 namespace clueapi::modules::logging::detail {
     /**

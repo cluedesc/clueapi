@@ -7,6 +7,25 @@
 #ifndef CLUEAPI_HTTP_CTX_HXX
 #define CLUEAPI_HTTP_CTX_HXX
 
+#include <utility>
+#include <string_view>
+
+#include <boost/algorithm/string/find.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/multipart/multipart.hxx"
+#include "clueapi/http/types/field/field.hxx"
+#include "clueapi/http/types/file/file.hxx"
+#include "clueapi/http/types/request/request.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/non_copy/extract_from/extract_from.hxx"
+#include "clueapi/shared/shared.hxx"
+
+#include "clueapi/modules/macros.hxx"
+
 namespace clueapi::http {
     /**
      * @struct ctx_t
@@ -58,7 +77,7 @@ namespace clueapi::http {
         CLUEAPI_NOINLINE static shared::awaitable_t<ctx_t> make_awaitable(
             types::request_t request,
             types::params_t params,
-            multipart::parser_t::cfg_t cfg) noexcept {
+            multipart::parser_t::cfg_t cfg) {
             ctx_t ctx{std::move(request), std::move(params)};
 
             co_await ctx.parse(cfg);

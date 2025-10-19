@@ -7,6 +7,18 @@
 #ifndef CLUEAPI_HTTP_MULTIPART_DETAIL_STRING_PARSER_HXX
 #define CLUEAPI_HTTP_MULTIPART_DETAIL_STRING_PARSER_HXX
 
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include <boost/asio/this_coro.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/http/multipart/detail/base_parser/base_parser.hxx"
+#include "clueapi/http/multipart/detail/headers_parser/headers_parser.hxx"
+#include "clueapi/http/multipart/detail/types/types.hxx"
+
 /**
  * @namespace clueapi::http::multipart::detail
  *

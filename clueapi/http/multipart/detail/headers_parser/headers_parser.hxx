@@ -7,6 +7,21 @@
 #ifndef CLUEAPI_HTTP_MULTIPART_DETAIL_HEADERS_PARSER_HXX
 #define CLUEAPI_HTTP_MULTIPART_DETAIL_HEADERS_PARSER_HXX
 
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+#include <algorithm>
+
+#include <boost/algorithm/string.hpp>
+
+#include "clueapi/http/detail/detail.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/non_copy/shared/shared.hxx"
+#include "clueapi/shared/non_copy/non_copy.hxx"
+#include "clueapi/shared/non_copy/split_view/split_view.hxx"
+
 namespace clueapi::http::multipart::detail {
     /**
      * @struct headers_t

@@ -9,6 +9,16 @@
 #ifndef CLUEAPI_EXCEPTIONS_DETAIL_HXX
 #define CLUEAPI_EXCEPTIONS_DETAIL_HXX
 
+#include <exception>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include <fmt/compile.h>
+#include <fmt/format.h>
+
+#include "clueapi/shared/macros.hxx"
+
 #include "prefix/prefix.hxx"
 
 /**

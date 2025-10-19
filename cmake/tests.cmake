@@ -14,7 +14,7 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-if (WIN32)
+if(WIN32)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif()
 
@@ -59,15 +59,7 @@ endif()
 add_executable(clueapi_tests ${CLUEAPI_TEST_SOURCES})
 
 configure_target(clueapi_tests 
-    USE_RTTI ${CLUEAPI_USE_RTTI}
-    ENABLE_IPO OFF
-    ENABLE_ASAN ${CLUEAPI_ENABLE_ASAN}
-    ENABLE_UBSAN ${CLUEAPI_ENABLE_UBSAN}
-    ENABLE_TSAN ${CLUEAPI_ENABLE_TSAN}
-    ENABLE_WARNINGS ${CLUEAPI_ENABLE_WARNINGS}
-    ENABLE_OPTIMIZATIONS ${CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS}
     ENABLE_IO_URING ON
-    ENABLE_CUSTOM_LINKER ON
 )
 
 target_link_libraries(clueapi_tests
@@ -75,15 +67,6 @@ target_link_libraries(clueapi_tests
     clueapi
     GTest::gtest_main
 )
-
-if (CLUEAPI_ENABLE_IPO)
-    message(STATUS "Forcing IPO for clueapi_tests")
-
-    set_target_properties(clueapi_tests PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION TRUE
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
-    )
-endif()
 
 include(GoogleTest)
 

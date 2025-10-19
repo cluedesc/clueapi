@@ -7,6 +7,25 @@
 #ifndef CLUEAPI_HTTP_TYPES_RESPONSE_HXX
 #define CLUEAPI_HTTP_TYPES_RESPONSE_HXX
 
+#include <functional>
+#include <string>
+#include <utility>
+
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/http/types/basic/basic.hxx"
+#include "clueapi/http/types/cookie/cookie.hxx"
+#include "clueapi/http/types/status/status.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
+// Forward declarations
+namespace clueapi::http::chunks {
+    struct chunk_writer_t;
+}
+
 namespace clueapi::http::types {
     /**
      * @struct base_response_t
@@ -275,7 +294,7 @@ namespace clueapi::http::types {
      *
      * @brief A convenience response class for `text/html` content.
      */
-    struct html_response_t : base_response_t {
+    struct html_response_t : public base_response_t {
         CLUEAPI_INLINE constexpr html_response_t() noexcept = default;
 
         CLUEAPI_INLINE
@@ -300,7 +319,7 @@ namespace clueapi::http::types {
      *
      * @brief A convenience response class for HTTP redirects.
      */
-    struct redirect_response_t : base_response_t {
+    struct redirect_response_t : public base_response_t {
         CLUEAPI_INLINE constexpr redirect_response_t() noexcept = default;
 
         CLUEAPI_INLINE redirect_response_t(
@@ -419,13 +438,6 @@ namespace clueapi::http::types {
     };
 
     /**
-     * @enum e_response_class
-     *
-     * @brief Defines the default class for error responses (e.g., plain text or JSON).
-     */
-    enum struct e_response_class : std::uint8_t { plain, json };
-
-    /**
      * @struct response_class_t
      *
      * @brief A template-based factory for creating specific response types.
@@ -475,7 +487,7 @@ namespace clueapi::http::types {
             return _class_t(
                 std::forward<_body_t>(body),
 
-                std::move(status_code),
+                status_code,
 
                 std::move(headers));
         }

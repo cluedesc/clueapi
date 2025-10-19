@@ -7,6 +7,14 @@
 #ifndef CLUEAPI_CFG_LOGGING_HXX
 #define CLUEAPI_CFG_LOGGING_HXX
 
+#include <chrono>
+#include <cstddef>
+#include <string>
+
+#ifdef CLUEAPI_USE_LOGGING_MODULE
+#include "clueapi/modules/logging/logging.hxx"
+#endif // CLUEAPI_USE_LOGGING_MODULE
+
 namespace clueapi::cfg {
 #ifdef CLUEAPI_USE_LOGGING_MODULE
     /**

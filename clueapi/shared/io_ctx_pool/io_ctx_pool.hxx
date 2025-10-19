@@ -8,6 +8,16 @@
 #ifndef CLUEAPI_SHARED_IO_CTX_POOL_HXX
 #define CLUEAPI_SHARED_IO_CTX_POOL_HXX
 
+#include <atomic>
+#include <memory>
+#include <thread>
+#include <vector>
+
+#include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/io_context.hpp>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::shared {
     /**
      * @struct io_ctx_pool_t

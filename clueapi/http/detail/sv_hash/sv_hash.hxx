@@ -9,6 +9,12 @@
 #ifndef CLUEAPI_HTTP_DETAIL_SV_HASH_HXX
 #define CLUEAPI_HTTP_DETAIL_SV_HASH_HXX
 
+#include <string_view>
+
+#include <ankerl/unordered_dense.h>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::http::detail {
     /**
      * @struct sv_hash_t

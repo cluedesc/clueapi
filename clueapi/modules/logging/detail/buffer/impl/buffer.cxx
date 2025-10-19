@@ -4,7 +4,7 @@
  * @brief Implements the buffer class.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/modules/logging/detail/buffer/buffer.hxx"
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 namespace clueapi::modules::logging::detail {

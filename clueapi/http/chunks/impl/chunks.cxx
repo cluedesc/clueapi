@@ -4,7 +4,13 @@
  * @brief Implements the chunk writer.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/http/chunks/chunks.hxx"
+
+#include <boost/asio/write.hpp>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/use_awaitable.hpp>
+
+#include "clueapi/exceptions/exceptions.hxx"
 
 namespace clueapi::http::chunks {
     exceptions::expected_awaitable_t<> chunk_writer_t::write_chunk(std::string_view data) noexcept {

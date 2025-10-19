@@ -7,6 +7,17 @@
 #ifndef CLUEAPI_HTTP_TYPES_FILE_HXX
 #define CLUEAPI_HTTP_TYPES_FILE_HXX
 
+#include <string>
+#include <vector>
+
+#include <boost/filesystem.hpp>
+#include <boost/system/error_code.hpp>
+
+#include "clueapi/http/detail/sv_hash/sv_hash.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 namespace clueapi::http::types {
     /**
      * @struct file_t

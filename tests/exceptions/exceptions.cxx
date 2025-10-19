@@ -1,6 +1,14 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/error.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/system/system_error.hpp>
+#include <stdexcept>
+
+#include "clueapi/exceptions/exceptions.hxx"
+#include "clueapi/exceptions/wrap/wrap.hxx"
 
 class exceptions_tests : public ::testing::Test {};
 

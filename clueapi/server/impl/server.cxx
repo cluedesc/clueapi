@@ -4,7 +4,28 @@
  * @brief Implements the main server class.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/server/server.hxx"
+
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/redirect_error.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/lockfree/queue.hpp>
+
+#include "clueapi/modules/macros.hxx"
+
+#include "clueapi/server/client/client.hxx"
+
+#include "clueapi/exceptions/exceptions.hxx"
 
 namespace clueapi::server {
     class c_server::c_impl {
@@ -144,13 +165,12 @@ namespace clueapi::server {
             }
 
             {
-                m_self->set_keep_alive_timeout(
-                    fmt::format(
-                        "timeout={}",
+                m_self->set_keep_alive_timeout(fmt::format(
+                    "timeout={}",
 
-                        std::chrono::duration_cast<std::chrono::seconds>(
-                            m_cfg.m_http.m_keep_alive_timeout)
-                            .count()));
+                    std::chrono::duration_cast<std::chrono::seconds>(
+                        m_cfg.m_http.m_keep_alive_timeout)
+                        .count()));
             }
 
             try {
@@ -374,7 +394,7 @@ namespace clueapi::server {
             co_return;
         }
 
-        void update_socket_settings(boost::asio::ip::tcp::socket& socket) {
+        void update_socket_settings(boost::asio::ip::tcp::socket& socket) const {
             boost::system::error_code ec;
 
             if (m_cfg.m_socket.m_tcp_no_delay) {
@@ -460,22 +480,13 @@ namespace clueapi::server {
             try {
                 boost::system::error_code ec{};
 
-                auto remote = socket.remote_endpoint(ec);
+                [[maybe_unused]] auto remote = socket.remote_endpoint(ec);
 
-                if (!ec) {
-                    CLUEAPI_LOG_TRACE(
-                        "Accept loop {} accepted connection from {}:{}",
-
-                        loop_id,
-                        remote.address().to_string(),
-                        remote.port());
-                } else {
-                    CLUEAPI_LOG_TRACE(
-                        "Accept loop {} accepted connection (failed to get remote endpoint: {})",
-
-                        loop_id,
-                        ec.message());
-                }
+                CLUEAPI_LOG_TRACE(
+                    "Accept loop {} accepted connection{}",
+                    loop_id,
+                    !ec ? fmt::format(" from {}:{}", remote.address().to_string(), remote.port())
+                        : fmt::format(" (failed to get remote endpoint: {})", ec.message()));
             } catch (...) {
                 CLUEAPI_LOG_TRACE(
                     "Accept loop {} accepted connection (failed to log details)", loop_id);

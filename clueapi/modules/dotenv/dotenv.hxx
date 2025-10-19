@@ -10,7 +10,18 @@
 #ifndef CLUEAPI_MODULES_DOTENV_HXX
 #define CLUEAPI_MODULES_DOTENV_HXX
 
-#include "detail/detail.hxx"
+#include <charconv>
+#include <string>
+#include <system_error>
+#include <type_traits>
+
+#include <boost/algorithm/string.hpp>
+
+#include "clueapi/shared/macros.hxx"
+
+#include "detail/container/container.hxx"
+#include "detail/hash/hash.hxx"
+#include "detail/type_traits/type_traits.hxx"
 
 #ifdef CLUEAPI_USE_DOTENV_MODULE
 namespace clueapi::modules::dotenv {

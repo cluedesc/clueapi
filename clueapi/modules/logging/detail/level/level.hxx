@@ -8,6 +8,15 @@
 #define CLUEAPI_MODULES_LOGGING_DETAIL_LEVEL_HXX
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include <cstdint>
+#include <chrono>
+#include <string_view>
+#include <string>
+
+#include "clueapi/modules/logging/detail/level/level.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::modules::logging::detail {
     /**
      * @enum e_log_level

@@ -2,11 +2,17 @@
 
 include(CMakeFindDependencyMacro)
 
-find_dependency(Boost 1.84.0 COMPONENTS system filesystem iostreams)
+if(NOT TARGET Boost::system)
+    find_dependency(Boost 1.84.0 COMPONENTS system filesystem iostreams)
+endif()
 
-find_dependency(OpenSSL)
+if(NOT TARGET OpenSSL::SSL)
+    find_dependency(OpenSSL)
+endif()
 
-find_dependency(Threads)
+if(NOT TARGET Threads::Threads)
+    find_dependency(Threads)
+endif()
 
 if(UNIX AND NOT APPLE)
     find_package(PkgConfig QUIET)

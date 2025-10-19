@@ -9,6 +9,8 @@
 #ifndef CLUEAPI_HTTP_TYPES_COOKIE_DETAIL_HXX
 #define CLUEAPI_HTTP_TYPES_COOKIE_DETAIL_HXX
 
+#include <cstddef>
+
 /**
  * @namespace clueapi::http::types::detail
  *

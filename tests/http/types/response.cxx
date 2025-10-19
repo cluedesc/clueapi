@@ -1,11 +1,28 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <array>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/address_v4.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/system/error_code.hpp>
+#include <chrono>
+#include <cstddef>
+#include <fstream>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include <boost/asio.hpp>
-#include <boost/asio/experimental/awaitable_operators.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/scope_exit.hpp>
+#include "clueapi/exceptions/wrap/wrap.hxx"
+#include "clueapi/http/chunks/chunks.hxx"
+#include "clueapi/http/types/response/response.hxx"
+#include "clueapi/http/types/status/status.hxx"
 
 using namespace clueapi::http;
 using namespace clueapi::http::types;

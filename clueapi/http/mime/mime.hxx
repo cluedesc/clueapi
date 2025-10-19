@@ -7,6 +7,10 @@
 #ifndef CLUEAPI_HTTP_MIME_HXX
 #define CLUEAPI_HTTP_MIME_HXX
 
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/http/types/mime/mime.hxx"
+
 #include "detail/detail.hxx"
 
 /**

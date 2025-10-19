@@ -7,6 +7,12 @@
 #ifndef CLUEAPI_HTTP_TYPES_MIME_HXX
 #define CLUEAPI_HTTP_TYPES_MIME_HXX
 
+#include <string_view>
+
+#include "clueapi/http/detail/sv_hash/sv_hash.hxx"
+
+#include "clueapi/shared/shared.hxx"
+
 namespace clueapi::http::types {
     /**
      * @brief Type alias for a string view representing a MIME type (e.g., "text/html").

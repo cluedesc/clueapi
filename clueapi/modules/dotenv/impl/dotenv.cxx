@@ -4,7 +4,12 @@
  * @brief Implementation of the dotenv module.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/modules/dotenv/dotenv.hxx"
+
+#include <fstream>
+#include <iterator>
+
+#include <boost/algorithm/string/trim.hpp>
 
 #ifdef CLUEAPI_USE_DOTENV_MODULE
 namespace clueapi::modules::dotenv {

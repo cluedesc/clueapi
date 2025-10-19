@@ -7,6 +7,26 @@
 #ifndef CLUEAPI_ROUTE_DETAIL_HXX
 #define CLUEAPI_ROUTE_DETAIL_HXX
 
+#include <concepts>
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/ctx/ctx.hxx"
+#include "clueapi/http/types/basic/basic.hxx"
+#include "clueapi/http/types/method/method.hxx"
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 /**
  * @namespace clueapi::route::detail
  *

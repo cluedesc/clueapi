@@ -1,4 +1,8 @@
-file(GLOB_RECURSE CLUEAPI_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/clueapi/*.cxx)
+file(GLOB_RECURSE CLUEAPI_SOURCES ${PROJECT_SOURCE_DIR}/clueapi/*.cxx)
+
+if(NOT CLUEAPI_SOURCES)
+    message(FATAL_ERROR "No source files found in ${PROJECT_SOURCE_DIR}/clueapi/")
+endif()
 
 if(NOT CLUEAPI_USE_LOGGING_MODULE)
     list(FILTER CLUEAPI_SOURCES EXCLUDE REGEX "/modules/logging/")

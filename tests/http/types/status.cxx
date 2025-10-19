@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include "clueapi/http/types/status/status.hxx"
 
 class status_tests : public ::testing::Test {};
 

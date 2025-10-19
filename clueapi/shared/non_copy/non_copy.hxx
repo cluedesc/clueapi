@@ -7,12 +7,6 @@
 #ifndef CLUEAPI_SHARED_NON_COPY_HXX
 #define CLUEAPI_SHARED_NON_COPY_HXX
 
-#include "shared/shared.hxx"
-
-#include "extract_from/extract_from.hxx"
-
-#include "split_view/split_view.hxx"
-
 /**
  * @namespace clueapi::shared::non_copy
  *

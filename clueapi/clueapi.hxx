@@ -11,39 +11,28 @@
 #ifndef CLUEAPI_HXX
 #define CLUEAPI_HXX
 
-#include "shared/shared.hxx"
+#include <memory>
+#include <variant>
+#include <functional>
 
-#include "exceptions/exceptions.hxx"
+#include "clueapi/cfg/cfg.hxx"
 
-#include "modules/modules.hxx"
+#include "clueapi/route/route.hxx"
 
+#include "clueapi/shared/macros.hxx"
+
+// Forward declarations
 namespace clueapi {
-#ifdef CLUEAPI_USE_LOGGING_MODULE
-    /**
-     * @brief The global instance of the logging module.
-     */
-    extern const std::unique_ptr<modules::logging::c_logging> g_logging;
-#endif // CLUEAPI_USE_LOGGING_MODULE
+    namespace middleware {
+        class c_base_middleware;
 
-#ifdef CLUEAPI_USE_DOTENV_MODULE
-    /**
-     * @brief The global instance of the dotenv module.
-     */
-    extern const std::unique_ptr<modules::dotenv::c_dotenv> g_dotenv;
-#endif // CLUEAPI_USE_DOTENV_MODULE
+        using middleware_t = std::shared_ptr<c_base_middleware>;
+    } // namespace middleware
+
+    namespace shared {
+        struct io_ctx_pool_t;
+    } // namespace shared
 } // namespace clueapi
-
-#include "modules/macros.hxx"
-
-#include "http/http.hxx"
-
-#include "cfg/cfg.hxx"
-
-#include "route/route.hxx"
-
-#include "middleware/middleware.hxx"
-
-#include "server/server.hxx"
 
 /**
  * @namespace clueapi

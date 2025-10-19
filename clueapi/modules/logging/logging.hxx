@@ -7,7 +7,22 @@
 #ifndef CLUEAPI_MODULES_LOGGING_HXX
 #define CLUEAPI_MODULES_LOGGING_HXX
 
-#include "detail/detail.hxx"
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <string_view>
+#include <thread>
+#include <utility>
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
+#include "detail/base_logger/base_logger.hxx"
+#include "detail/hash/hash.hxx"
+#include "detail/level/level.hxx"
+#include "detail/log/log.hxx"
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 namespace clueapi::modules::logging {

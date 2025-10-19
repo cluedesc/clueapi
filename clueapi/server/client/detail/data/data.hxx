@@ -7,6 +7,24 @@
 #ifndef CLUEAPI_SERVER_CLIENT_DETAIL_DATA_HXX
 #define CLUEAPI_SERVER_CLIENT_DETAIL_DATA_HXX
 
+#include <cstdint>
+#include <optional>
+#include <utility>
+#include <exception>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/http/message.hpp>
+#include <boost/beast/http/string_body.hpp>
+#include <boost/system/error_code.hpp>
+
+#include "clueapi/http/types/request/request.hxx"
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/modules/macros.hxx"
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::server::client::detail {
     /**
      * @struct data_t

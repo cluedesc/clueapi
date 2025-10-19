@@ -1,6 +1,20 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/io_context.hpp>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "clueapi/http/types/request/request.hxx"
+#include "clueapi/http/types/response/response.hxx"
+#include "clueapi/http/types/status/status.hxx"
+#include "clueapi/middleware/middleware.hxx"
+#include "clueapi/shared/shared.hxx"
 
 using namespace clueapi;
 using namespace clueapi::http;

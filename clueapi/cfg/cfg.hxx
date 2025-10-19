@@ -9,6 +9,14 @@
 #ifndef CLUEAPI_CFG_HXX
 #define CLUEAPI_CFG_HXX
 
+#include <chrono>
+#include <cstdint>
+#include <string>
+
+#include "clueapi/http/types/response_class/response_class.hxx"
+
+#include "clueapi/http/multipart/detail/types/cfg/cfg.hxx"
+
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 #include "logging/logging.hxx"
 #endif // CLUEAPI_USE_LOGGING_MODULE
@@ -71,7 +79,7 @@ namespace clueapi::cfg {
                 /**
                  * @brief Default buffer capacity for the client in bytes.
                  */
-                std::size_t m_buffer_capacity{64u * 1024u};
+                std::size_t m_buffer_capacity{64ull * 1024u};
             } m_client{};
 
             /**
@@ -139,7 +147,7 @@ namespace clueapi::cfg {
             /**
              * @brief Configuration for the multipart/form-data parser.
              */
-            http::multipart::parser_t::cfg_t m_multipart_parser_cfg{};
+            http::multipart::detail::cfg_t m_multipart_parser_cfg{};
 
             /**
              * @brief Maximum size of a full HTTP request in bytes, including headers and body.

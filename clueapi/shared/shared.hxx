@@ -11,51 +11,20 @@
 #ifndef CLUEAPI_SHARED_HXX
 #define CLUEAPI_SHARED_HXX
 
-#if defined(_MSC_VER)
-/**
- * @def CLUEAPI_INLINE
- *
- * @brief A macro for forcing function inlining, specific to the MSVC compiler.
- */
-#define CLUEAPI_INLINE __forceinline
+#include <algorithm>
+#include <cctype>
+#include <string>
+#include <string_view>
+#include <functional>
 
-/**
- * @def CLUEAPI_NOINLINE
- *
- * @brief A macro for preventing function inlining, specific to the MSVC compiler.
- */
-#define CLUEAPI_NOINLINE __declspec(noinline)
-#else
-/**
- * @def CLUEAPI_INLINE
- *
- * @brief A macro for forcing function inlining, used with Clang, GCC, and Intel compilers.
- */
-#define CLUEAPI_INLINE __attribute__((always_inline)) inline
+#include <boost/asio/any_io_executor.hpp>
+#include <boost/asio/awaitable.hpp>
 
-/**
- * @def CLUEAPI_NOINLINE
- *
- * @brief A macro for preventing function inlining, used with Clang, GCC, and Intel compilers.
- */
-#define CLUEAPI_NOINLINE __attribute__((noinline))
-#endif
+#include <ankerl/unordered_dense.h>
 
-#ifdef _WIN32
-/**
- * @brief A formatter for `boost::asio::ip::tcp::socket::native_handle_type`.
- * 
- * @details This formatter is used to print `boost::asio::ip::tcp::socket::native_handle_type` objects on Windows platform.
- */
-template <>
-struct fmt::formatter<boost::asio::ip::tcp::socket::native_handle_type>
-    : fmt::formatter<std::uintptr_t> {
-    template <typename FormatContext>
-    auto format(boost::asio::ip::tcp::socket::native_handle_type handle, FormatContext& ctx) const {
-        return fmt::formatter<std::uintptr_t>::format(static_cast<std::uintptr_t>(handle), ctx);
-    }
-};
-#endif // _WIN32
+#include <fmt/format.h>
+
+#include "macros.hxx"
 
 /**
  * @namespace clueapi::shared
@@ -101,41 +70,7 @@ namespace clueapi::shared {
      *
      * @return A safe-to-use filename.
      */
-    CLUEAPI_INLINE std::string sanitize_filename(std::string_view original_name) {
-        if (original_name.empty())
-            return "untitled";
-
-        std::string sanitized{};
-
-        sanitized.reserve(original_name.length());
-
-        std::copy_if(
-            original_name.begin(), original_name.end(), std::back_inserter(sanitized), [](char c) {
-                if (std::isalnum(static_cast<unsigned char>(c)))
-                    return true;
-
-                switch (c) {
-                    case '_':
-                    case '-':
-                    case '.':
-                        return true;
-
-                    default:
-                        return false;
-                }
-            });
-
-        if (sanitized.empty() || sanitized == "." || sanitized == "..")
-            return "untitled";
-
-        return sanitized;
-    }
+    std::string sanitize_filename(std::string_view original_name);
 } // namespace clueapi::shared
-
-#include "json_traits/json_traits.hxx"
-
-#include "io_ctx_pool/io_ctx_pool.hxx"
-
-#include "non_copy/non_copy.hxx"
 
 #endif // CLUEAPI_SHARED_HXX

@@ -9,6 +9,13 @@
 #ifndef CLUEAPI_HTTP_DETAIL_COMPARATORS_HXX
 #define CLUEAPI_HTTP_DETAIL_COMPARATORS_HXX
 
+#include <string_view>
+
+#include <boost/algorithm/string/compare.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::http::detail {
     /**
      * @struct ci_less_t

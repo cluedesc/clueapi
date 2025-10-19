@@ -1,7 +1,14 @@
 #ifndef CLUEAPI_MODULES_REDIS_HXX
 #define CLUEAPI_MODULES_REDIS_HXX
 
-#include "detail/detail.hxx"
+#include <memory>
+#include <optional>
+
+#include <boost/asio/io_context.hpp>
+
+#include "clueapi/modules/redis/detail/detail.hxx"
+
+#include "clueapi/shared/macros.hxx"
 
 namespace clueapi::modules::redis {
     using cfg_t = detail::cfg_t;
@@ -27,15 +34,15 @@ namespace clueapi::modules::redis {
             boost::asio::io_context* io_ctx = nullptr);
 
        public:
-        CLUEAPI_INLINE bool is_running() const noexcept {
+        [[nodiscard]] bool is_running() const noexcept {
             return m_running;
         }
 
-        CLUEAPI_INLINE const auto& cfg() const noexcept {
+        [[nodiscard]] const auto& cfg() const noexcept {
             return m_cfg;
         }
 
-        CLUEAPI_INLINE auto io_ctx() const noexcept {
+        [[nodiscard]] boost::asio::io_context* io_ctx() const noexcept {
             return m_io_ctx;
         }
 

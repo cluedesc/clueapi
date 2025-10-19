@@ -4,7 +4,11 @@
  * @brief Implements the radix tree for routing.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/route/detail/detail.hxx"
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/route/route.hxx"
 
 namespace clueapi::route::detail {
     /**

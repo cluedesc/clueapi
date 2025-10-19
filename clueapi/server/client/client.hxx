@@ -7,7 +7,28 @@
 #ifndef CLUEAPI_SERVER_CLIENT_HXX
 #define CLUEAPI_SERVER_CLIENT_HXX
 
-#include "detail/detail.hxx"
+#include <cstdint>
+
+#include <boost/asio/ip/tcp.hpp>
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
+#include "detail/data/data.hxx"
+
+// Forward declarations
+namespace clueapi {
+    class c_clueapi;
+
+    namespace cfg {
+        struct cfg_t;
+    }
+
+    namespace server {
+        class c_server;
+    }
+} // namespace clueapi
+
 namespace clueapi {
     class c_clueapi;
 

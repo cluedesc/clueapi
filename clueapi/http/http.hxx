@@ -7,18 +7,6 @@
 #ifndef CLUEAPI_HTTP_HXX
 #define CLUEAPI_HTTP_HXX
 
-#include "detail/detail.hxx"
-
-#include "chunks/chunks.hxx"
-
-#include "types/types.hxx"
-
-#include "mime/mime.hxx"
-
-#include "multipart/multipart.hxx"
-
-#include "ctx/ctx.hxx"
-
 /**
  * @namespace clueapi::http
  *

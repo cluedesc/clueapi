@@ -7,7 +7,30 @@
 #ifndef CLUEAPI_SERVER_HXX
 #define CLUEAPI_SERVER_HXX
 
-#include "client/client.hxx"
+#include <atomic>
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include "clueapi/cfg/cfg.hxx"
+
+#include "clueapi/middleware/middleware.hxx"
+
+#include "clueapi/shared/io_ctx_pool/io_ctx_pool.hxx"
+#include "clueapi/shared/macros.hxx"
+
+// Forward declarations
+namespace clueapi {
+    class c_clueapi;
+
+    namespace server::client {
+        struct client_t;
+
+        namespace detail {
+            struct response_handler_t;
+        }
+    } // namespace server::client
+} // namespace clueapi
 
 /**
  * @namespace clueapi::server

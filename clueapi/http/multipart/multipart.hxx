@@ -7,7 +7,20 @@
 #ifndef CLUEAPI_HTTP_MULTIPART_HXX
 #define CLUEAPI_HTTP_MULTIPART_HXX
 
-#include "detail/detail.hxx"
+#include <string>
+#include <string_view>
+
+#include <boost/filesystem/path.hpp>
+
+#include <fmt/compile.h>
+#include <fmt/core.h>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
+#include "detail/file_parser/file_parser.hxx"
+#include "detail/string_parser/string_parser.hxx"
 
 /**
  * @namespace clueapi::http::multipart

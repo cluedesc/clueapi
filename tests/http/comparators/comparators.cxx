@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include "clueapi/http/detail/comparators/comparators.hxx"
 
 using clueapi::http::detail::ci_less_t;
 

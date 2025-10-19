@@ -1,5 +1,9 @@
+if(NOT CLUEAPI_IS_TOP_LEVEL)
+    return()
+endif()
+
 configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/clueapi-config.cmake.in
+    ${PROJECT_SOURCE_DIR}/cmake/clueapi-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/clueapi-config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/clueapi
 )

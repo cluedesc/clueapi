@@ -1,6 +1,14 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <fstream>
+#include <ios>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "clueapi/http/types/file/file.hxx"
 
 class file_tests : public ::testing::Test {
   protected:

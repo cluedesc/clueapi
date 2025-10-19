@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+
+#include "clueapi/http/detail/sv_hash/sv_hash.hxx"
 
 using clueapi::http::detail::sv_eq_t;
 using clueapi::http::detail::sv_hash_t;

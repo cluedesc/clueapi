@@ -1,6 +1,9 @@
+#include "clueapi/modules/redis/redis.hxx"
+
 #include <boost/redis/src.hpp>
 
-#include <clueapi.hxx>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace clueapi::modules::redis {
     void c_redis::init(cfg_t cfg, boost::asio::io_context* io_ctx) {
@@ -62,7 +65,7 @@ namespace clueapi::modules::redis {
         } else
             final_cfg = std::move(*cfg);
 
-        auto final_io_ctx = io_ctx ? io_ctx : m_io_ctx;
+        auto* final_io_ctx = io_ctx ? io_ctx : m_io_ctx;
 
         return std::make_shared<connection_t>(std::move(final_cfg), *final_io_ctx);
     }

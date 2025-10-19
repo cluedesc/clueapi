@@ -50,7 +50,4 @@ namespace clueapi::exceptions {
     using io_error_t = detail::base_exception_t<detail::prefix_holder_t{"I/O error"}>;
 } // namespace clueapi::exceptions
 
-// Includes the wrap() and wrap_awaitable() utilities.
-#include "wrap/wrap.hxx"
-
 #endif // CLUEAPI_EXCEPTIONS_HXX

@@ -12,7 +12,24 @@
 #ifndef CLUEAPI_EXCEPTIONS_WRAP_HXX
 #define CLUEAPI_EXCEPTIONS_WRAP_HXX
 
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include <fmt/compile.h>
+#include <fmt/core.h>
+
+#include <tl/expected.hpp>
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 namespace clueapi::exceptions {
+    /**
+     * @brief The default type for error messages in `expected_t`.
+     */
+    using message_t = std::string;
+
     /**
      * @brief Represents a result that is either an expected value or an error.
      *
@@ -51,7 +68,7 @@ namespace clueapi::exceptions {
      * model.
      */
     template <typename _ret_t = void, typename _callable_t>
-    CLUEAPI_INLINE expected_t<_ret_t> wrap(_callable_t&& callable, std::string_view ctx) {
+    CLUEAPI_INLINE expected_t<_ret_t> wrap(_callable_t&& callable, std::string_view ctx) noexcept {
         try {
             if constexpr (std::is_void_v<_ret_t>) {
                 (void)std::forward<_callable_t>(callable)();
@@ -86,7 +103,7 @@ namespace clueapi::exceptions {
      */
     template <typename _ret_t = void, typename _awaitable_t>
     CLUEAPI_NOINLINE expected_awaitable_t<_ret_t> wrap_awaitable(
-        _awaitable_t awaitable, std::string_view ctx) {
+        _awaitable_t awaitable, std::string_view ctx) noexcept {
         try {
             if constexpr (std::is_void_v<_ret_t>) {
                 (void)co_await std::move(awaitable);

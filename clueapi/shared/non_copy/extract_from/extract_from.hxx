@@ -7,6 +7,13 @@
 #ifndef CLUEAPI_SHARED_NON_COPY_EXTRACT_FROM_HXX
 #define CLUEAPI_SHARED_NON_COPY_EXTRACT_FROM_HXX
 
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/non_copy/shared/shared.hxx"
+
 namespace clueapi::shared::non_copy {
     /**
      * @brief Extracts a value as a string view from a semicolon-separated string.

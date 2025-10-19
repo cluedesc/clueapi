@@ -13,6 +13,29 @@
 #ifndef CLUEAPI_MODULES_REDIS_DETAIL_CONNECTION_HXX
 #define CLUEAPI_MODULES_REDIS_DETAIL_CONNECTION_HXX
 
+#include <chrono>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/redirect_error.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/asio/use_future.hpp>
+#include <boost/redis/request.hpp>
+#include <boost/redis/response.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/system/system_error.hpp>
+
+#include "clueapi/modules/redis/detail/base_connection/base_connection.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 namespace clueapi::modules::redis::detail {
     /**
      * @struct connection_t
@@ -35,7 +58,7 @@ namespace clueapi::modules::redis::detail {
          * @param io_ctx The Boost.Asio I/O context for operations.
          */
         CLUEAPI_INLINE connection_t(cfg_t cfg, boost::asio::io_context& io_ctx)
-            : base_t{cfg, io_ctx} {
+            : base_t{std::move(cfg), io_ctx} {
         }
 
        public:

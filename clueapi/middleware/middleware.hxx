@@ -7,6 +7,15 @@
 #ifndef CLUEAPI_MIDDLEWARE_HXX
 #define CLUEAPI_MIDDLEWARE_HXX
 
+#include <functional>
+#include <memory>
+
+#include "clueapi/http/types/request/request.hxx"
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 /**
  * @namespace clueapi::middleware
  *

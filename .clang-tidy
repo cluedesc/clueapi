@@ -7,8 +7,6 @@ Checks: >
   readability-*,
   portability-*,
   cppcoreguidelines-*,
-  -clangd-unused-includes,
-  -unused-includes,
   -bugprone-unused-return-value,
   -readability-magic-numbers,
   -cppcoreguidelines-owning-memory,
@@ -44,7 +42,7 @@ Checks: >
 
 WarningsAsErrors: ""
 
-HeaderFilterRegex: ".*"
+HeaderFilterRegex: "^.*clueapi/(?!.*thirdparty).*"
 
 InheritParentConfig: false
 

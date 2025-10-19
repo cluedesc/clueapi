@@ -9,9 +9,12 @@
 #ifndef CLUEAPI_HTTP_DETAIL_HXX
 #define CLUEAPI_HTTP_DETAIL_HXX
 
-#include "comparators/comparators.hxx"
+#include <charconv>
+#include <string>
+#include <string_view>
+#include <system_error>
 
-#include "sv_hash/sv_hash.hxx"
+#include "clueapi/shared/macros.hxx"
 
 /**
  * @namespace clueapi::http::detail

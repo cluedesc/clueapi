@@ -7,15 +7,20 @@
 #ifndef CLUEAPI_MODULES_LOGGING_DETAIL_HXX
 #define CLUEAPI_MODULES_LOGGING_DETAIL_HXX
 
-#include "hash/hash.hxx"
+#include <chrono>
+#include <fstream>
+#include <string_view>
 
-#include "level/level.hxx"
+#include <fmt/chrono.h>
+#include <fmt/color.h>
+#include <fmt/compile.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
-#include "log/log.hxx"
+#include "clueapi/modules/logging/detail/level/level.hxx"
+#include "clueapi/modules/logging/detail/log/log.hxx"
 
-#include "buffer/buffer.hxx"
-
-#include "base_logger/base_logger.hxx"
+#include "clueapi/shared/macros.hxx"
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 namespace clueapi::modules::logging::detail {

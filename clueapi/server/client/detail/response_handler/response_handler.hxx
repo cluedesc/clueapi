@@ -7,6 +7,32 @@
 #ifndef CLUEAPI_SERVER_CLIENT_DETAIL_RESPONSE_HANDLER_HXX
 #define CLUEAPI_SERVER_CLIENT_DETAIL_RESPONSE_HANDLER_HXX
 
+#include <cstdint>
+#include <string>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/http/message.hpp>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
+// Forward declarations
+namespace clueapi {
+    namespace cfg {
+        struct cfg_t;
+    }
+
+    namespace server {
+        class c_server;
+
+        namespace client::detail {
+            struct data_t;
+        }
+    } // namespace server
+} // namespace clueapi
+
 namespace clueapi::server {
     class c_server;
 

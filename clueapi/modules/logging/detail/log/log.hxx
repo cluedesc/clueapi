@@ -8,6 +8,11 @@
 #define CLUEAPI_MODULES_LOGGING_DETAIL_LOG_HXX
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include <chrono>
+#include <string>
+
+#include "clueapi/modules/logging/detail/level/level.hxx"
+
 namespace clueapi::modules::logging::detail {
     /**
      * @struct log_msg_t

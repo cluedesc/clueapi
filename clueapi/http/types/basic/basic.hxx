@@ -7,6 +7,12 @@
 #ifndef CLUEAPI_HTTP_TYPES_BASIC_HXX
 #define CLUEAPI_HTTP_TYPES_BASIC_HXX
 
+#include "clueapi/http/detail/comparators/comparators.hxx"
+
+#include "clueapi/shared/json_traits/json_traits.hxx"
+
+#include <map>
+
 /**
  * @namespace clueapi::http::types
  *

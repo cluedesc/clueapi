@@ -1,4 +1,9 @@
-#include <clueapi.hxx>
+#include "clueapi/modules/redis/detail/base_connection/base_connection.hxx"
+
+#include <utility>
+
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace clueapi::modules::redis::detail {
     void base_connection_t::disconnect() {

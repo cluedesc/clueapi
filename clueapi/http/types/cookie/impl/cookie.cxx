@@ -4,7 +4,15 @@
  * @brief Implements the cookie type.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/http/types/cookie/cookie.hxx"
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/types/cookie/detail/detail.hxx"
+
+#include <fmt/base.h>
+#include <fmt/chrono.h>
+#include <fmt/compile.h>
 
 namespace clueapi::http::types {
     exceptions::expected_t<raw_cookie_t> cookie_t::serialize(const cookie_t& cookie) noexcept {

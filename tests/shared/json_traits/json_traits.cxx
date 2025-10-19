@@ -8,7 +8,12 @@
 
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <string>
+#include <vector>
+
+#include "clueapi/shared/json_traits/json_traits.hxx"
+
+#include <nlohmann/json.hpp>
 
 using json_traits = clueapi::shared::json_traits_t;
 

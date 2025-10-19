@@ -1,4 +1,16 @@
-#include <clueapi.hxx>
+#include "clueapi/modules/redis/detail/connection/connection.hxx"
+
+#include <chrono>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <unordered_map>
+#include <vector>
+
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/redis/request.hpp>
+#include <boost/redis/response.hpp>
 
 namespace clueapi::modules::redis::detail {
     shared::awaitable_t<bool> connection_t::async_connect() {

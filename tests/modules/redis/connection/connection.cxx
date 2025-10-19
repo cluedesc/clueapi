@@ -1,6 +1,15 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/use_future.hpp>
+#include <boost/redis/logger.hpp>
+#include <chrono>
+#include <memory>
+#include <thread>
+
+#include "clueapi/modules/redis/redis.hxx"
 
 using namespace clueapi::modules::redis;
 

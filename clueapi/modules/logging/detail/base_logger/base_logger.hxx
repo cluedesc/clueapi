@@ -8,6 +8,17 @@
 #define CLUEAPI_MODULES_LOGGING_DETAIL_BASE_LOGGER_HXX
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include <condition_variable>
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "clueapi/modules/logging/detail/buffer/buffer.hxx"
+#include "clueapi/modules/logging/detail/level/level.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::modules::logging {
     class c_logging;
 

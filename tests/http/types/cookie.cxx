@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <chrono>
+#include <string>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+#include "clueapi/http/types/cookie/cookie.hxx"
 
 class cookie_tests : public ::testing::Test {};
 

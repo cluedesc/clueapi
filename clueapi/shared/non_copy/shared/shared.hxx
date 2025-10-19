@@ -7,6 +7,10 @@
 #ifndef CLUEAPI_SHARED_NON_COPY_SHARED_HXX
 #define CLUEAPI_SHARED_NON_COPY_SHARED_HXX
 
+#include <string_view>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::shared::non_copy {
     /**
      * @brief Checks if a character is an ASCII whitespace character.

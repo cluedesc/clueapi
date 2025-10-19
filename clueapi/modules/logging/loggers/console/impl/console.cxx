@@ -4,9 +4,11 @@
  * @brief Implementation of the console logger.
  */
 
-#include <clueapi.hxx>
-
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include "clueapi/modules/logging/loggers/console/console.hxx"
+
+#include "clueapi/modules/logging/detail/detail.hxx"
+
 namespace clueapi::modules::logging {
     void console_logger_t::process() {
         auto batch = m_buffer.get_batch(m_params.m_batch_size);
@@ -27,14 +29,14 @@ namespace clueapi::modules::logging {
         detail::print(buffer);
     }
 
-    void console_logger_t::handle_overflow(log_msg_t msg) {
+    void console_logger_t::handle_overflow(detail::log_msg_t msg) {
         if (m_buffer.empty()) {
             m_buffer.push(std::move(msg));
 
             return;
         }
 
-        log_msg_t old_msg{};
+        detail::log_msg_t old_msg{};
 
         if (!m_buffer.pop(old_msg))
             return;
@@ -44,7 +46,7 @@ namespace clueapi::modules::logging {
         m_prv_params.m_condition->notify_one();
     }
 
-    void console_logger_t::log(log_msg_t msg) {
+    void console_logger_t::log(detail::log_msg_t msg) {
         if (msg.m_level < m_params.m_level)
             return;
 

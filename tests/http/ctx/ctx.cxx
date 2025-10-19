@@ -1,6 +1,22 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/system/error_code.hpp>
+#include <exception>
+#include <functional>
+#include <fstream>
+#include <ios>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+
+#include "clueapi/http/ctx/ctx.hxx"
+#include "clueapi/http/types/request/request.hxx"
 
 std::string
 create_test_multipart_body(

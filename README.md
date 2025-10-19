@@ -4,7 +4,7 @@
   <a href="https://cluedesc.github.io/clueapi/index"><img src="https://img.shields.io/badge/Mk-Docs-blue.svg" alt="MkDocs"></a>
   <a href="https://cluedesc.github.io/clueapi/doxygen"><img src="https://img.shields.io/badge/Doxygen-Docs-blue.svg" alt="DoxygenDocs"></a>
   <img src="https://img.shields.io/badge/C%2B%2B-20-blue.svg" alt="C++ Standard">
-  <a href="."><img src="https://img.shields.io/badge/Version-2.2.0-blue.svg" alt="Version"></a>
+  <a href="."><img src="https://img.shields.io/badge/Version-3.0.0-blue.svg" alt="Version"></a>
   <a href="https://github.com/cluedesc/clueapi/actions/workflows/tests.yml"><img src="https://github.com/cluedesc/clueapi/actions/workflows/tests.yml/badge.svg" alt="Build"></a>
   <a href="https://app.codacy.com/gh/cluedesc/clueapi/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade" target="_blank" rel="noopener noreferrer"><img src="https://app.codacy.com/project/badge/Grade/5a8d305ab93c4c9da65b0ccfb59e6d3c" alt="Codacy Grade" /></a>
 </p>
@@ -281,15 +281,8 @@ You can customize the build using the following CMake options:
 | `CLUEAPI_USE_NLOHMANN_JSON`          | Enable **nlohmann/json** support                                             | `ON`    |
 | `CLUEAPI_USE_CUSTOM_JSON`            | Enable **custom JSON** support (overrides `nlohmann/json`)                   | `OFF`   |
 | `CLUEAPI_USE_LOGGING_MODULE`         | Enable the **logging module**                                                | `ON`    |
-| `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `ON`    |
-| `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `ON`    |
-| `CLUEAPI_USE_RTTI`                   | Enable **Run-Time Type Information (RTTI)**                                  | `OFF`   |
-| `CLUEAPI_ENABLE_ASAN`                | Enable **AddressSanitizer (ASan)**                                           | `OFF`   |
-| `CLUEAPI_ENABLE_TSAN`                | Enable **ThreadSanitizer (TSan)**                                            | `OFF`   |
-| `CLUEAPI_ENABLE_UBSAN`               | Enable **UndefinedBehaviorSanitizer (UBSan)**                                | `OFF`   |
-| `CLUEAPI_ENABLE_IPO`                 | Enable **Interprocedural Optimization (IPO/LTO)**                            | `ON`    |
-| `CLUEAPI_ENABLE_EXTRA_OPTIMIZATIONS` | Enable **extra compiler optimizations**                                      | `ON`    |
-| `CLUEAPI_ENABLE_WARNINGS`            | Enable **extra compiler warnings**                                           | `OFF`   |
+| `CLUEAPI_USE_DOTENV_MODULE`          | Enable the **dotenv module**                                                 | `OFF`    |
+| `CLUEAPI_USE_REDIS_MODULE`           | Enable the **Redis module**                                                  | `OFF`    |
 | `CLUEAPI_BUILD_TESTS`                | Build and enable tests                                                       | `OFF`   |
 | `CLUEAPI_OPTIMIZED_LOG_LEVEL`        | Optimized log level: `TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE`    | `INFO`  |
 

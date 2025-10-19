@@ -7,6 +7,12 @@
 #ifndef CLUEAPI_HTTP_TYPES_STATUS_HXX
 #define CLUEAPI_HTTP_TYPES_STATUS_HXX
 
+#include <cstdint>
+#include <string>
+#include <string_view>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::http::types {
     /**
      * @struct status_t

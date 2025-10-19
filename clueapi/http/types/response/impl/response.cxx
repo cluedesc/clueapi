@@ -4,7 +4,18 @@
  * @brief Implements the response type.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/chunks/chunks.hxx"
+#include "clueapi/http/mime/mime.hxx"
+
+#include <boost/asio/stream_file.hpp>
+#include <boost/asio/this_coro.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace clueapi::http::types {
     inline constexpr std::size_t k_def_buffer_size = 8192;

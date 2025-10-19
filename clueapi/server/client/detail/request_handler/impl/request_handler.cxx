@@ -1,4 +1,30 @@
-#include <clueapi.hxx>
+/**
+ * @file request_handler.cxx
+ *
+ * @brief Implements the request handler.
+ */
+
+#include "clueapi/server/client/detail/request_handler/request_handler.hxx"
+
+#include "clueapi/cfg/cfg.hxx"
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/types/method/method.hxx"
+#include "clueapi/modules/macros.hxx"
+
+#include "clueapi/server/client/detail/detail.hxx"
+
+#include "clueapi/shared/non_copy/extract_from/extract_from.hxx"
+
+#include <boost/filesystem.hpp>
+
+#include <boost/algorithm/string/predicate.hpp>
+
+#include <boost/asio/stream_file.hpp>
+
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/websocket.hpp>
 
 namespace clueapi::server::client::detail {
     exceptions::expected_awaitable_t<e_error_code> req_handler_t::handle() {
@@ -95,8 +121,7 @@ namespace clueapi::server::client::detail {
                 auto tmp_file =
                     m_cfg.m_server.m_tmp_dir / boost::filesystem::unique_path("tmp-%%%%-%%%%");
 
-                co_return co_await stream_handle(
-                    std::move(hdr_parser), std::move(tmp_file), content_length);
+                co_return co_await stream_handle(std::move(tmp_file), content_length);
             }
         }
 
@@ -104,7 +129,6 @@ namespace clueapi::server::client::detail {
     }
 
     exceptions::expected_awaitable_t<e_error_code> req_handler_t::stream_handle(
-        boost::beast::http::request_parser<boost::beast::http::empty_body>&& hdr_parser,
         boost::filesystem::path path,
         std::size_t content_length) {
         const auto& executor = co_await boost::asio::this_coro::executor;

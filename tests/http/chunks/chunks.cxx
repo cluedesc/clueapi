@@ -1,6 +1,20 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <array>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/address_v4.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/system/error_code.hpp>
+#include <memory>
+#include <string>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+#include "clueapi/http/chunks/chunks.hxx"
 
 #define EXPECT_EXPECTED(expr)                                                                                          \
     {                                                                                                                  \

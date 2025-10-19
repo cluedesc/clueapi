@@ -4,7 +4,9 @@
  * @brief Implements the request type.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/http/types/request/request.hxx"
+
+#include <algorithm>
 
 namespace clueapi::http::types {
     void request_t::parse_cookies() const noexcept {

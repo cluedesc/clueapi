@@ -4,7 +4,12 @@
  * @brief Implements the MIME type lookup.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/http/mime/mime.hxx"
+
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include <boost/filesystem/path.hpp>
 
 namespace clueapi::http::mime {
     const types::mime_map_t& mime_t::mime_map() noexcept {

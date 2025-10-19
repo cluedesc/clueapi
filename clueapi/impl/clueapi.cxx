@@ -4,7 +4,35 @@
  * @brief Implements the main application class `c_clueapi`.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/clueapi.hxx"
+
+#include <atomic>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <string_view>
+#include <system_error>
+#include <thread>
+#include <utility>
+
+#include <boost/asio/error.hpp>
+#include <boost/asio/signal_set.hpp>
+
+#include "clueapi/exceptions/exceptions.hxx"
+
+#include "clueapi/http/ctx/ctx.hxx"
+#include "clueapi/http/types/response/response.hxx"
+
+#include "clueapi/middleware/middleware.hxx"
+
+#include "clueapi/modules/macros.hxx"
+
+#include "clueapi/route/detail/detail.hxx"
+#include "clueapi/route/route.hxx"
+
+#include "clueapi/server/server.hxx"
+
+#include "clueapi/shared/io_ctx_pool/io_ctx_pool.hxx"
 
 namespace clueapi {
 #ifdef CLUEAPI_USE_LOGGING_MODULE
@@ -626,11 +654,12 @@ namespace clueapi {
             CLUEAPI_LOG_TRACE("Tmp directory '{}' created", m_cfg.m_server.m_tmp_dir);
         }
 
-        void remove_tmp_dir() {
+        void remove_tmp_dir() const {
             if (boost::filesystem::exists(m_cfg.m_server.m_tmp_dir)) {
                 CLUEAPI_LOG_TRACE("Removing tmp directory '{}'", m_cfg.m_server.m_tmp_dir);
 
-                auto count = boost::filesystem::remove_all(m_cfg.m_server.m_tmp_dir);
+                [[maybe_unused]] const auto count =
+                    boost::filesystem::remove_all(m_cfg.m_server.m_tmp_dir);
 
                 CLUEAPI_LOG_TRACE(
                     "Removed {} files from tmp directory '{}'",

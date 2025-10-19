@@ -10,6 +10,12 @@
 #ifndef CLUEAPI_MODULES_REDIS_DETAIL_CFG_HXX
 #define CLUEAPI_MODULES_REDIS_DETAIL_CFG_HXX
 
+#include <chrono>
+#include <cstdint>
+#include <string>
+
+#include <boost/redis/logger.hpp>
+
 namespace clueapi::modules::redis::detail {
     /**
      * @struct cfg_t

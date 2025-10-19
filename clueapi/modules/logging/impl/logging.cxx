@@ -4,12 +4,12 @@
  * @brief Implementation of the logging module.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/modules/logging/logging.hxx"
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
 namespace clueapi::modules::logging {
     void c_logging::init(cfg_t cfg) {
-        m_cfg = std::move(cfg);
+        m_cfg = cfg;
 
         m_is_running.store(true, std::memory_order_release);
 

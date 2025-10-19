@@ -7,6 +7,10 @@
 #ifndef CLUEAPI_HTTP_TYPES_FIELD_HXX
 #define CLUEAPI_HTTP_TYPES_FIELD_HXX
 
+#include "clueapi/http/detail/sv_hash/sv_hash.hxx"
+
+#include "clueapi/shared/shared.hxx"
+
 namespace clueapi::http::types {
     /**
      * @brief Type alias for a map of form fields from a `multipart/form-data` request.

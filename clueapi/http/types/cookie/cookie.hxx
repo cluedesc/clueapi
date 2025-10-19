@@ -7,7 +7,15 @@
 #ifndef CLUEAPI_HTTP_TYPES_COOKIE_HXX
 #define CLUEAPI_HTTP_TYPES_COOKIE_HXX
 
-#include "detail/detail.hxx"
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
+#include <string_view>
+#include <string>
+
+#include <vector>
 
 namespace clueapi::http::types {
     /**

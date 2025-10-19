@@ -7,6 +7,18 @@
 #ifndef CLUEAPI_HTTP_CHUNKS_HXX
 #define CLUEAPI_HTTP_CHUNKS_HXX
 
+#include <cstddef>
+#include <ranges>
+#include <string_view>
+
+#include <boost/asio/ip/tcp.hpp>
+
+#include <fmt/core.h>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/shared/macros.hxx"
+
 /**
  * @namespace clueapi::http::chunks
  *

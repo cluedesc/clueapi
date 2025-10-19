@@ -1,6 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <chrono>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "clueapi/modules/logging/detail/hash/hash.hxx"
+#include "clueapi/modules/logging/loggers/console/console.hxx"
+#include "clueapi/modules/logging/logging.hxx"
 
 class logging_sync_tests : public ::testing::Test {
   protected:

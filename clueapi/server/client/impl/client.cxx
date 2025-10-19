@@ -4,7 +4,16 @@
  * @brief Implements the client class that handles a single connection.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/server/client/client.hxx"
+
+#include "clueapi/cfg/cfg.hxx"
+
+#include "clueapi/modules/macros.hxx"
+
+#include "clueapi/server/server.hxx"
+
+#include "clueapi/server/client/detail/request_handler/request_handler.hxx"
+#include "clueapi/server/client/detail/response_handler/response_handler.hxx"
 
 namespace clueapi::server::client {
     client_t::client_t(c_server& server, const cfg::cfg_t& cfg)

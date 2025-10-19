@@ -7,6 +7,10 @@
 #ifndef CLUEAPI_HTTP_MULTIPART_DETAIL_BASE_PARSER_HXX
 #define CLUEAPI_HTTP_MULTIPART_DETAIL_BASE_PARSER_HXX
 
+#include "clueapi/exceptions/wrap/wrap.hxx"
+
+#include "clueapi/http/multipart/detail/types/types.hxx"
+
 /**
  * @namespace clueapi::http::multipart::detail
  *

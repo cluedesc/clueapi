@@ -14,6 +14,20 @@
 #ifndef CLUEAPI_MODULES_REDIS_DETAIL_BASE_CONNECTION_HXX
 #define CLUEAPI_MODULES_REDIS_DETAIL_BASE_CONNECTION_HXX
 
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include <boost/asio/io_context.hpp>
+#include <boost/redis/config.hpp>
+#include <boost/redis/connection.hpp>
+#include <boost/redis/logger.hpp>
+
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::modules::redis::detail {
     /**
      * @brief The raw Redis connection type.
@@ -50,7 +64,14 @@ namespace clueapi::modules::redis::detail {
              *
              * @internal
              */
-            enum e_state { idle, connecting, connected, disconnected, error, unknown };
+            enum e_state : std::uint8_t {
+                idle,
+                connecting,
+                connected,
+                disconnected,
+                error,
+                unknown
+            };
 
            public:
             CLUEAPI_INLINE state_t() = default;
@@ -69,7 +90,7 @@ namespace clueapi::modules::redis::detail {
              *
              * @return The current connection state.
              */
-            CLUEAPI_INLINE e_state get() const noexcept {
+            [[nodiscard]] CLUEAPI_INLINE e_state get() const noexcept {
                 return m_state.load(std::memory_order_acquire);
             }
 
@@ -211,7 +232,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return `true` if the connection is alive, `false` otherwise.
          */
-        CLUEAPI_INLINE bool is_alive() const noexcept {
+        [[nodiscard]] CLUEAPI_INLINE bool is_alive() const noexcept {
             return m_state.get() == state_t::connected;
         }
 
@@ -220,7 +241,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return The connection configuration.
          */
-        CLUEAPI_INLINE const auto& cfg() const noexcept {
+        [[nodiscard]] CLUEAPI_INLINE const auto& cfg() const noexcept {
             return m_cfg;
         }
 
@@ -229,7 +250,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return The current connection state.
          */
-        CLUEAPI_INLINE const auto state() const noexcept {
+        [[nodiscard]] CLUEAPI_INLINE const auto state() const noexcept {
             return m_state.get();
         }
 
@@ -238,7 +259,7 @@ namespace clueapi::modules::redis::detail {
          *
          * @return A shared pointer to the raw connection.
          */
-        CLUEAPI_INLINE auto raw_connection() const noexcept {
+        [[nodiscard]] CLUEAPI_INLINE auto raw_connection() const noexcept {
             return m_connection;
         }
 

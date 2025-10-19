@@ -8,6 +8,8 @@
 #define CLUEAPI_MODULES_MACROS_HXX
 
 #ifdef CLUEAPI_USE_DOTENV_MODULE
+#include "clueapi/modules/dotenv/dotenv.hxx"
+
 /**
  * @def CLUEAPI_DOTENV_GET
  *
@@ -24,6 +26,8 @@
 #endif // CLUEAPI_USE_DOTENV_MODULE
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include "clueapi/modules/logging/logging.hxx"
+
 #define CLUEAPI_LOG_LEVEL_TRACE 0
 #define CLUEAPI_LOG_LEVEL_DEBUG 1
 #define CLUEAPI_LOG_LEVEL_INFO 2
@@ -82,9 +86,7 @@
         clueapi::modules::logging::e_log_level::trace, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_TRACE(message, ...) \
-    do {                                \
-    } while (0)
+#define CLUEAPI_LOG_TRACE(message, ...) ((void)0)
 #endif
 
 /**
@@ -102,9 +104,7 @@
         clueapi::modules::logging::e_log_level::debug, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_DEBUG(message, ...) \
-    do {                                \
-    } while (0)
+#define CLUEAPI_LOG_DEBUG(message, ...) ((void)0)
 #endif
 
 /**
@@ -122,9 +122,7 @@
         clueapi::modules::logging::e_log_level::info, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_INFO(message, ...) \
-    do {                               \
-    } while (0)
+#define CLUEAPI_LOG_INFO(message, ...) ((void)0)
 #endif
 
 /**
@@ -142,9 +140,7 @@
         clueapi::modules::logging::e_log_level::warning, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_WARNING(message, ...) \
-    do {                                  \
-    } while (0)
+#define CLUEAPI_LOG_WARNING(message, ...) ((void)0)
 #endif
 
 /**
@@ -162,9 +158,7 @@
         clueapi::modules::logging::e_log_level::error, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_ERROR(message, ...) \
-    do {                                \
-    } while (0)
+#define CLUEAPI_LOG_ERROR(message, ...) ((void)0)
 #endif
 
 /**
@@ -182,12 +176,12 @@
         clueapi::modules::logging::e_log_level::critical, \
         message, ##__VA_ARGS__)
 #else
-#define CLUEAPI_LOG_CRITICAL(message, ...) \
-    do {                                   \
-    } while (0)
+#define CLUEAPI_LOG_CRITICAL(message, ...) ((void)0)
 #endif
 #else
 #define CLUEAPI_LOG(hash, level, message, ...)
+
+#define CLUEAPI_LOG_TRACE(message, ...)
 
 #define CLUEAPI_LOG_DEBUG(message, ...)
 
@@ -199,5 +193,21 @@
 
 #define CLUEAPI_LOG_CRITICAL(message, ...)
 #endif // CLUEAPI_USE_LOGGING_MODULE
+
+namespace clueapi {
+#ifdef CLUEAPI_USE_LOGGING_MODULE
+    /**
+     * @brief The global instance of the logging module.
+     */
+    extern const std::unique_ptr<modules::logging::c_logging> g_logging;
+#endif // CLUEAPI_USE_LOGGING_MODULE
+
+#ifdef CLUEAPI_USE_DOTENV_MODULE
+    /**
+     * @brief The global instance of the dotenv module.
+     */
+    extern const std::unique_ptr<modules::dotenv::c_dotenv> g_dotenv;
+#endif // CLUEAPI_USE_DOTENV_MODULE
+} // namespace clueapi
 
 #endif // CLUEAPI_MODULES_MACROS_HXX

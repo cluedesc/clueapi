@@ -13,12 +13,6 @@
 #ifndef CLUEAPI_MODULES_DOTENV_DETAIL_HXX
 #define CLUEAPI_MODULES_DOTENV_DETAIL_HXX
 
-#include "type_traits/type_traits.hxx"
-
-#include "hash/hash.hxx"
-
-#include "container/container.hxx"
-
 #ifdef CLUEAPI_USE_DOTENV_MODULE
 /**
  * @namespace clueapi::modules::dotenv::detail

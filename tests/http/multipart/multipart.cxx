@@ -1,6 +1,23 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <functional>
+#include <fstream>
+#include <ios>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+
+#include "clueapi/exceptions/wrap/wrap.hxx"
+#include "clueapi/http/multipart/multipart.hxx"
+#include "clueapi/http/types/file/file.hxx"
 
 using namespace clueapi::http;
 using namespace clueapi::http::types;

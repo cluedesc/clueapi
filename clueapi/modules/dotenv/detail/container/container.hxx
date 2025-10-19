@@ -7,6 +7,9 @@
 #ifndef CLUEAPI_MODULES_DOTENV_DETAIL_CONTAINER_HXX
 #define CLUEAPI_MODULES_DOTENV_DETAIL_CONTAINER_HXX
 
+#include "clueapi/shared/macros.hxx"
+#include "clueapi/shared/shared.hxx"
+
 #ifdef CLUEAPI_USE_DOTENV_MODULE
 namespace clueapi::modules::dotenv::detail {
     /**

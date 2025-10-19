@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <clueapi.hxx>
+#include <boost/filesystem/path.hpp>
+
+#include "clueapi/http/mime/mime.hxx"
+#include "clueapi/http/types/mime/mime.hxx"
 
 class mime_tests : public ::testing::Test {};
 

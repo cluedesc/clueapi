@@ -8,6 +8,14 @@
 #define CLUEAPI_MODULES_LOGGING_DETAIL_BUFFER_HXX
 
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include <mutex>
+#include <shared_mutex>
+#include <utility>
+#include <vector>
+
+#include "clueapi/modules/logging/detail/log/log.hxx"
+#include "clueapi/shared/macros.hxx"
+
 namespace clueapi::modules::logging::detail {
     /**
      * @struct msg_buffer_t

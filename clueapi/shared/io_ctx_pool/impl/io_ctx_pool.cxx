@@ -5,7 +5,13 @@
  * boost::asio::io_context objects.
  */
 
-#include <clueapi.hxx>
+#include "clueapi/shared/io_ctx_pool/io_ctx_pool.hxx"
+
+#include "clueapi/modules/macros.hxx"
+
+#ifdef __linux__
+#include <pthread.h>
+#endif // __linux__
 
 namespace clueapi::shared {
     void io_ctx_pool_t::start(std::size_t num_threads) {

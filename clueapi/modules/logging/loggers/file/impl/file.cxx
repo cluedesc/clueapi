@@ -4,9 +4,11 @@
  * @brief Implementation of the file logger.
  */
 
-#include <clueapi.hxx>
-
 #ifdef CLUEAPI_USE_LOGGING_MODULE
+#include "clueapi/modules/logging/loggers/file/file.hxx"
+
+#include "clueapi/modules/logging/detail/detail.hxx"
+
 namespace clueapi::modules::logging {
     void file_logger_t::process() {
         file_path_changed();
@@ -32,14 +34,14 @@ namespace clueapi::modules::logging {
         detail::print(m_file, buffer);
     }
 
-    void file_logger_t::handle_overflow(log_msg_t msg) {
+    void file_logger_t::handle_overflow(detail::log_msg_t msg) {
         if (m_buffer.empty()) {
             m_buffer.push(std::move(msg));
 
             return;
         }
 
-        log_msg_t old_msg{};
+        detail::log_msg_t old_msg{};
 
         if (!m_buffer.pop(old_msg))
             return;
@@ -49,7 +51,7 @@ namespace clueapi::modules::logging {
         m_prv_params.m_condition->notify_one();
     }
 
-    void file_logger_t::log(log_msg_t msg) {
+    void file_logger_t::log(detail::log_msg_t msg) {
         if (msg.m_level < m_params.m_level)
             return;
 
